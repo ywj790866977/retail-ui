@@ -1,6 +1,7 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
+    <h1>{{ username }}</h1>
+    <input type="text" v-model="keyWord" @input="setName">
     <p>
       For a guide and recipes on how to configure / customize this project,<br>
       check out the
@@ -31,10 +32,43 @@
 </template>
 
 <script>
+import { CommonService } from '../api/common'
 export default {
   name: 'HelloWorld',
   props: {
     msg: String
+  },
+  data() {
+    return {
+      keyWord: '',
+      commonService: CommonService,
+    }
+  },
+  computed: {
+    username() {// getter
+      return this.$store.state.user.name
+    }
+  },
+  mounted() {
+      this.commonService.getList().then((res) =>{
+          console.info(res)
+      })
+      //或者
+      let params = {}
+      this.$http({
+        method: 'get',
+        url: 'itemborrow/pagelist',
+        params: {
+          pageSize: 2,
+        },
+      }).then(res => {
+        console.info(res)
+      })
+  },
+  methods: {
+      setName() { // setter
+        this.$store.dispatch('user/setInfo', { name : this.keyWord })
+      }
   }
 }
 </script>
