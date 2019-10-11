@@ -49,41 +49,13 @@
 
 <script>
 import EditableCell from "../components/module/user/EditableCell";
+import {userMap} from "../project/unit/dataMap";
 export default {
   name: "userManager",
   data() {
     return {
-      columns: [
-        { title: "itcode", dataIndex: "username", key: "username" },
-        { title: "姓名", dataIndex: "name", key: "name" },
-        {
-          title: "密码",
-          dataIndex: "pwd",
-          scopedSlots: { customRender: "pwd" },
-          width: "20%",
-          key: "pwd"
-        },
-        {
-          title: "状态",
-          dataIndex: "status",
-          scopedSlots: { customRender: "status" },
-          key: "status"
-        },
-        {
-          title: "角色",
-          dataIndex: "role",
-          scopedSlots: { customRender: "role" },
-          key: "role"
-        },
-        {
-          title: "更新时间",
-          dataIndex: "updateTime",
-          scopedSlots: { customRender: "updateTime" },
-          key: "updateTime"
-        }
-      ],
+      columns:[],
       data: [],
-
       loading: false,
       pagination: {
         size: "small",
@@ -97,6 +69,7 @@ export default {
     };
   },
   created() {
+    this.columns = userMap.columns;
     this.handleTableChange();
   },
   methods: {
@@ -106,16 +79,18 @@ export default {
     },
     // 根据itcode查询
     onSearch(value) {
-      console.log(value);
-      // const url = '/retail/user/{um}';
       if(value){
+        this.loading = true;
         this.axios.get(`retail/user/${value}`).then(res => {
-          console.log(res)
-          // this.data = res.data
-          // if (res.status == 200) {
-          //   this.success("修改密码成功！");
+          if (res.status == 200) {
+            this.success("查询成功");
+            let _data = [];
+            res.data.key = 1;
+            _data.push(res.data)
+            this.data = _data;
+            this.loading = false;
+          }
           
-          // }
         });
       }
     },
@@ -124,6 +99,7 @@ export default {
       // console.log(key, dataIndex, value);
       if (value) {
         let params = { username: key, pwd: value };
+        this.loading = true
         this.axios.put(`retail/user/${key}`, { ...params }).then(res => {
           if (res.status == 200) {
             this.success("修改密码成功！");
@@ -133,17 +109,22 @@ export default {
               target[dataIndex] = value;
               this.dataSource = dataSource;
             }
+            this.loading = false;
           }
+          
         });
       }
     },
     updateInfo(key,dataIndex,value) {
       if(key[dataIndex] != value){
         let params = { username: key.username, [dataIndex]: value };
+        this.loading = true;
         this.axios.put(`retail/user/${key.username}`, { ...params }).then(res => {
           if (res.status == 200) {
             this.success(`修改成功!`);
+            this.loading = false;
           }
+          
         });
       }
     },

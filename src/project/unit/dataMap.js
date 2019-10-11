@@ -111,4 +111,36 @@ const xsData = {
     }
   ]
 };
-export { xsData };
+
+const userMap = {
+  columns: [
+    { title: "itcode", dataIndex: "username", key: "username" },
+    { title: "姓名", dataIndex: "name", key: "name" },
+    {
+      title: "密码",
+      dataIndex: "pwd",
+      scopedSlots: { customRender: "pwd" },
+      width: "20%",
+      key: "pwd"
+    },
+    {
+      title: "状态",
+      dataIndex: "status",
+      scopedSlots: { customRender: "status" },
+      key: "status"
+    },
+    {
+      title: "角色",
+      dataIndex: "role",
+      scopedSlots: { customRender: "role" },
+      key: "role"
+    },
+    {
+      title: "更新时间",
+      dataIndex: "updateTime",
+      scopedSlots: { customRender: "updateTime" },
+      key: "updateTime"
+    }
+  ],
+}
+export { xsData,userMap };
