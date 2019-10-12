@@ -18,6 +18,7 @@
         :pagination="pagination"
         :loading="loading"
         @change="handleTableChange"
+        :rowKey="data.id"
       >
         <template slot="name" slot-scope="text">
           <a href="javascript:;">{{text}}</a>
@@ -36,7 +37,11 @@
           </a-select>
         </template>
         <template slot="role" slot-scope="text,record">
-          <a-select :defaultValue="text" style="width: 120px" @change="updateInfo(record,'role',$event)">
+          <a-select
+            :defaultValue="text"
+            style="width: 120px"
+            @change="updateInfo(record,'role',$event)"
+          >
             <a-select-option value="管理员">管理员</a-select-option>
             <a-select-option value="销售员">销售员</a-select-option>
           </a-select>
@@ -49,49 +54,58 @@
 
 <script>
 import EditableCell from "../components/module/user/EditableCell";
-import {userMap} from "../project/unit/dataMap";
+import { userMap } from "../project/unit/dataMap";
 export default {
   name: "userManager",
   data() {
     return {
-      columns:[],
+      columns: [],
       data: [],
       loading: false,
       pagination: {
-        size: "small",
-        total: 0,
+        // size: "small",
+        // total: 0,
         showQuickJumper: true,
         showSizeChanger: true,
-        pageSize: 5,
+        pageSize: 10,
         current: 1,
-        showTotal: total => `共 ${total} 条`
+        showTotal: total => `共 ${total} 条`,
+        showSizeChange: (current, pageSize) => (this.pageSize = pageSize)
       }
     };
   },
   created() {
     this.columns = userMap.columns;
-    this.handleTableChange();
+    this.handleTableChange(this.pagination);
   },
   methods: {
     //提示消息
     success(msg) {
       this.$message.success(msg, 10);
     },
+    error(msg) {
+      this.$message.error(msg);
+    },
     // 根据itcode查询
     onSearch(value) {
-      if(value){
+      if (value) {
         this.loading = true;
-        this.axios.get(`retail/user/${value}`).then(res => {
-          if (res.status == 200) {
-            this.success("查询成功");
-            let _data = [];
-            res.data.key = 1;
-            _data.push(res.data)
-            this.data = _data;
+        this.axios
+          .get(`retail/user/${value}`)
+          .then(res => {
+            if (res.status == 200) {
+              let _data = [];
+              res.data.key = 1;
+              _data.push(res.data);
+              this.data = _data;
+              this.pagination.total = 1;
+              this.loading = false;
+            }
+          })
+          .catch(() => {
+            this.error("查询失败");
             this.loading = false;
-          }
-          
-        });
+          });
       }
     },
     // 修改密码
@@ -99,7 +113,7 @@ export default {
       // console.log(key, dataIndex, value);
       if (value) {
         let params = { username: key, pwd: value };
-        this.loading = true
+        this.loading = true;
         this.axios.put(`retail/user/${key}`, { ...params }).then(res => {
           if (res.status == 200) {
             this.success("修改密码成功！");
@@ -111,29 +125,33 @@ export default {
             }
             this.loading = false;
           }
-          
-        });
+        }).catch(() => {
+            this.error("修改密码失败！");
+            this.loading = false;
+          });
       }
     },
-    updateInfo(key,dataIndex,value) {
-      if(key[dataIndex] != value){
+    updateInfo(key, dataIndex, value) {
+      if (key[dataIndex] != value) {
         let params = { username: key.username, [dataIndex]: value };
         this.loading = true;
-        this.axios.put(`retail/user/${key.username}`, { ...params }).then(res => {
-          if (res.status == 200) {
-            this.success(`修改成功!`);
+        this.axios
+          .put(`retail/user/${key.username}`, { ...params })
+          .then(res => {
+            if (res.status == 200) {
+              this.success(`修改成功!`);
+              this.loading = false;
+            }
+          }).catch(() => {
+            this.error("修改失败！");
             this.loading = false;
-          }
-          
-        });
+          });
       }
     },
-    handleTableChange() {
-      // console.log(pagination);
-      // const pager = { ...this.pagination };
-      // pager.current = pagination.current;
-      // this.pagination = pager;
-      const pagination = this.pagination;
+    handleTableChange(pagination) {
+      const pager = { ...this.pagination };
+      pager.current = pagination.current || 1;
+      this.pagination = pager;
       this.fetch({
         size: pagination.pageSize,
         page: pagination.current
@@ -161,7 +179,10 @@ export default {
             this.loading = false;
             this.pagination = pagination;
           }
-        });
+        }).catch(() => {
+            this.error("查询用户列表失败！");
+            this.loading = false;
+          });
     }
   },
   computed: {

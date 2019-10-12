@@ -1,5 +1,5 @@
-import UserManager  from "./components/UserManager.vue"
-import QueryData from './components/QueryData.vue';
+import UserManager  from "@/components/UserManager.vue"
+import QueryData from '@/components/QueryData.vue';
 
 
 import VueRouter from 'vue-router';
