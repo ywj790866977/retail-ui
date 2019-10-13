@@ -10,7 +10,11 @@
     </div>
     <!-- 展示数据 -->
     <div class="data_table">
-      <h4>用户列表：</h4>
+      <div class="data_top">
+        <h4>用户列表：</h4>
+        <a-button type="primary">Primary</a-button>
+      </div>
+
       <a-table
         :columns="columns"
         :dataSource="data"
@@ -53,18 +57,19 @@
 </template>
 
 <script>
-import EditableCell from "../components/module/user/EditableCell";
-import { userMap } from "../project/unit/dataMap";
+import EditableCell from './component/EditableCell'
+import { userMap }  from '../../project/unit/dataMap.js'
 export default {
   name: "userManager",
   data() {
     return {
-      columns: [],
-      data: [],
+      columns: [], // 列名
+      data: [], // 实际数据
       loading: false,
       pagination: {
-        // size: "small",
-        // total: 0,
+        // 分页数据
+        // size: "small",  //分页组件大小
+        // total: 0,  //总记录数
         showQuickJumper: true,
         showSizeChanger: true,
         pageSize: 10,
@@ -114,18 +119,21 @@ export default {
       if (value) {
         let params = { username: key, pwd: value };
         this.loading = true;
-        this.axios.put(`retail/user/${key}`, { ...params }).then(res => {
-          if (res.status == 200) {
-            this.success("修改密码成功！");
-            const dataSource = [...this.data];
-            const target = dataSource.find(item => item.key === key);
-            if (target) {
-              target[dataIndex] = value;
-              this.dataSource = dataSource;
+        this.axios
+          .put(`retail/user/${key}`, { ...params })
+          .then(res => {
+            if (res.status == 200) {
+              this.success("修改密码成功！");
+              const dataSource = [...this.data];
+              const target = dataSource.find(item => item.key === key);
+              if (target) {
+                target[dataIndex] = value;
+                this.dataSource = dataSource;
+              }
+              this.loading = false;
             }
-            this.loading = false;
-          }
-        }).catch(() => {
+          })
+          .catch(() => {
             this.error("修改密码失败！");
             this.loading = false;
           });
@@ -142,7 +150,8 @@ export default {
               this.success(`修改成功!`);
               this.loading = false;
             }
-          }).catch(() => {
+          })
+          .catch(() => {
             this.error("修改失败！");
             this.loading = false;
           });
@@ -179,10 +188,11 @@ export default {
             this.loading = false;
             this.pagination = pagination;
           }
-        }).catch(() => {
-            this.error("查询用户列表失败！");
-            this.loading = false;
-          });
+        })
+        .catch(() => {
+          this.error("查询用户列表失败！");
+          this.loading = false;
+        });
     }
   },
   computed: {
@@ -226,6 +236,12 @@ export default {
 
   .data_table {
     margin-top: 2rem;
+    .data_top{
+
+      display: flex;
+      justify-content: space-between
+      
+    }
   }
 }
 </style>

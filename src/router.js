@@ -1,4 +1,4 @@
-import UserManager  from "@/components/UserManager.vue"
+import UserManager  from "@/components/user/UserManager.vue"
 import QueryData from '@/components/QueryData.vue';
 
 
