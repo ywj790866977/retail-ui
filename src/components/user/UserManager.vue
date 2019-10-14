@@ -5,14 +5,99 @@
       <h3 class="manager_title">账户管理</h3>
       <div class="serarch">
         <span>itcode:</span>
-        <a-input-search placeholder="请输入itcode" @search="onSearch" enterButton />
+        <a-input-search placeholder="请输入itcode" @search="onSearch" />
       </div>
     </div>
     <!-- 展示数据 -->
     <div class="data_table">
       <div class="data_top">
         <h4>用户列表：</h4>
-        <a-button type="primary">Primary</a-button>
+        <div>
+          <a-button type="primary" icon="plus" @click="showUserModal">新增用户</a-button>
+          <a-modal
+            title="新增用户"
+            :visible="visible"
+            @ok="handleOk"
+            :confirmLoading="confirmLoading"
+            @cancel="handleCancel"
+          >
+            <div>
+              <a-form :form="form" @submit="handleOk">
+                <a-form-item v-bind="formItemLayout" label="itCode" has-feedback>
+                  <a-input
+                    v-decorator="[
+          'username',
+          {
+            rules: [ {
+              required: true, message: '请输入itCode!',
+            }]
+          }
+        ]"
+                  />
+                </a-form-item>
+                <a-form-item v-bind="formItemLayout" label="姓名" has-feedback>
+                  <!-- <span slot="label" >
+                    姓名&nbsp;
+                    <a-tooltip title="真实姓名?">
+                      <a-icon type="question-circle-o" />
+                    </a-tooltip>
+                  </span>-->
+                  <a-input
+                    v-decorator="[
+          'name',
+          {
+            rules: [{ required: true, message: '请输入真实姓名!', whitespace: true }]
+          }
+        ]"
+                  />
+                </a-form-item>
+                <a-form-item v-bind="formItemLayout" label="密码" has-feedback>
+                  <a-input
+                    v-decorator="[
+          'pwd',
+          {
+            rules: [{
+              required: true, message: '请输入密码 !',
+            }, {
+              validator: validateToNextPassword,
+            }],
+          }
+        ]"
+                    type="password"
+                  />
+                </a-form-item>
+
+                <a-form-item v-bind="formItemLayout" label="启用" has-feedback>
+                  <a-select
+                    v-decorator="[
+          'status',
+          {rules: [{ required: true, message: '请选择用户状态！' }]}
+        ]"
+                    placeholder="请选择用户状态"
+                  >
+                    <a-select-option value="0">是</a-select-option>
+                    <a-select-option value="1">否</a-select-option>
+                  </a-select>
+                </a-form-item>
+                <a-form-item v-bind="formItemLayout" label="角色" has-feedback>
+                  <a-select
+                    v-decorator="[
+          'role',
+          {rules: [{ required: true, message: '请选择用户角色!' }]}
+        ]"
+                    placeholder="请选择角色"
+                  >
+                    <a-select-option value="管理员">管理员</a-select-option>
+                    <a-select-option value="销售员">销售员</a-select-option>
+                  </a-select>
+                </a-form-item>
+                <!-- <a-form-item v-bind="tailFormItemLayout">
+                  <a-button type="primary" html-type="submit">Register</a-button>
+                </a-form-item>-->
+              </a-form>
+            </div>
+          </a-modal>
+        </div>
       </div>
 
       <a-table
@@ -57,8 +142,9 @@
 </template>
 
 <script>
-import EditableCell from './component/EditableCell'
-import { userMap }  from '../../project/unit/dataMap.js'
+import EditableCell from "./component/EditableCell";
+import { userMap,residences } from "../../project/unit/dataMap.js";
+
 export default {
   name: "userManager",
   data() {
@@ -66,6 +152,9 @@ export default {
       columns: [], // 列名
       data: [], // 实际数据
       loading: false,
+      visible: false,
+      confirmLoading: false,
+      ispwd: false,
       pagination: {
         // 分页数据
         // size: "small",  //分页组件大小
@@ -76,21 +165,97 @@ export default {
         current: 1,
         showTotal: total => `共 ${total} 条`,
         showSizeChange: (current, pageSize) => (this.pageSize = pageSize)
+      },
+      confirmDirty: false,
+      residences,
+      autoCompleteResult: [],
+      formItemLayout: {
+        labelCol: {
+          xs: { span: 24 },
+          sm: { span: 8 }
+        },
+        wrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 16 }
+        }
+      },
+      tailFormItemLayout: {
+        wrapperCol: {
+          xs: {
+            span: 24,
+            offset: 0
+          },
+          sm: {
+            span: 16,
+            offset: 8
+          }
+        }
       }
     };
+  },
+  beforeCreate() {
+    this.form = this.$form.createForm(this);
   },
   created() {
     this.columns = userMap.columns;
     this.handleTableChange(this.pagination);
   },
   methods: {
-    //提示消息
+    // #### 提示消息
     success(msg) {
       this.$message.success(msg, 10);
     },
     error(msg) {
       this.$message.error(msg);
     },
+
+    // ####  新增用户
+    // 提交方法
+    //校验密码
+    validateToNextPassword(rule, value, callback) {
+      let tag = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{1,8}$/.test(value);
+      if (value && !tag) {
+        callback("密码格式不正确!");
+      }
+      callback();
+    },
+    //显示模态框
+    showUserModal() {
+      this.visible = true;
+    },
+    //确认按钮
+    handleOk() {
+      this.confirmLoading = true;
+      this.form.validateFieldsAndScroll((err, values) => {
+        if (!err) {
+          // console.log("表单内容: ", values);
+          this.axios
+            .post("retail/user", { ...values })
+            .then(res => {
+              if (res.status == 200) {
+                this.visible = false;
+                this.confirmLoading = false;
+                this.success("新增用户成功!");
+                // this.form.resetFields();
+                setTimeout(() => {
+                  this.handleTableChange(this.pagination);
+                }, 1000);
+              }
+            })
+            .catch(() => {
+              this.error("新增用户失败！");
+              this.confirmLoading = false;
+            });
+        }
+      });
+    },
+    //取消按钮
+    handleCancel() {
+      this.visible = false;
+      this.form.resetFields();
+    },
+
+    //  ######## 展示
     // 根据itcode查询
     onSearch(value) {
       if (value) {
@@ -114,11 +279,12 @@ export default {
       }
     },
     // 修改密码
-    updatePwd(key, dataIndex, value) {
-      // console.log(key, dataIndex, value);
-      if (value) {
-        let params = { username: key, pwd: value };
+    updatePwd(key, dataIndex, obj) {
+      // console.log(key, dataIndex, obj);
+      if (obj.status) {
         this.loading = true;
+        let params = { username: key, pwd: obj.value };
+
         this.axios
           .put(`retail/user/${key}`, { ...params })
           .then(res => {
@@ -127,7 +293,7 @@ export default {
               const dataSource = [...this.data];
               const target = dataSource.find(item => item.key === key);
               if (target) {
-                target[dataIndex] = value;
+                target[dataIndex] = obj.value;
                 this.dataSource = dataSource;
               }
               this.loading = false;
@@ -137,8 +303,11 @@ export default {
             this.error("修改密码失败！");
             this.loading = false;
           });
+      } else {
+        this.error("密码格式不正确！");
       }
     },
+    // 修改属性
     updateInfo(key, dataIndex, value) {
       if (key[dataIndex] != value) {
         let params = { username: key.username, [dataIndex]: value };
@@ -157,6 +326,7 @@ export default {
           });
       }
     },
+    // 分页显示
     handleTableChange(pagination) {
       const pager = { ...this.pagination };
       pager.current = pagination.current || 1;
@@ -236,11 +406,11 @@ export default {
 
   .data_table {
     margin-top: 2rem;
-    .data_top{
-
+    .data_top {
       display: flex;
-      justify-content: space-between
-      
+      justify-content: space-between;
+      margin-right: 1rem;
+      margin-bottom: 1rem;
     }
   }
 }

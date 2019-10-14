@@ -1,29 +1,12 @@
 <template>
   <div class="editable-cell">
-    <div
-      v-if="editable"
-      class="editable-cell-input-wrapper"
-    >
-      <a-input
-        :value="value"
-        @change="handleChange"
-        @pressEnter="check"
-      /><a-icon
-        type="check"
-        class="editable-cell-icon-check"
-        @click="check"
-      />
+    <div v-if="editable" class="editable-cell-input-wrapper">
+      <a-input :value="value" @change="handleChange" @pressEnter="check" />
+      <a-icon type="check" class="editable-cell-icon-check" @click="check" />
     </div>
-    <div
-      v-else
-      class="editable-cell-text-wrapper"
-    >
+    <div v-else class="editable-cell-text-wrapper">
       {{ value || ' ' }}
-      <a-icon
-        type="edit"
-        class="editable-cell-icon"
-        @click="edit"
-      />
+      <a-icon type="edit" class="editable-cell-icon" @click="edit" />
     </div>
   </div>
 </template>
@@ -31,32 +14,38 @@
 export default {
   props: {
     text: String,
+    checkpwd: Boolean
   },
-  data () {
+  data() {
     return {
       value: this.text,
-      editable: false,
+      editable: false
     };
   },
   methods: {
-    handleChange (e) {
+    handleChange(e) {
       const value = e.target.value;
+      // console.log(value)
       this.value = value;
     },
-    check () {
+    check() {
       this.editable = false;
-      this.$emit('change', this.value);
+      let isok = true;
+      if (!/^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{1,8}$/.test(this.value)) {
+        this.value = this.text;
+        isok = false;
+      }
+      // console.log(value);
+      this.$emit("change", { status: isok, value: this.value });
     },
-    edit () {
+    edit() {
       this.editable = true;
-    },
-  },
+    }
+  }
 };
 </script>
 
 <style scoped>
-
-
 .editable-cell {
   position: relative;
 }
@@ -100,5 +89,4 @@ export default {
 .editable-add-btn {
   margin-bottom: 8px;
 }
-    
 </style>
