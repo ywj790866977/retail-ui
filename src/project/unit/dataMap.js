@@ -2,9 +2,9 @@ const xsData = {
   columns: [
     {
       title: "留货日期",
-      dataIndex: "date",
+      dataIndex: "saveDate",
       
-      width: 90
+      width: 110
     },
     {
       title: "代理商编号",
@@ -21,7 +21,7 @@ const xsData = {
       title: "销售员",
       dataIndex: "salesName",
       scopedSlots: { customRender: "name" },
-      width: 90
+      width: 80
     },
     {
       title: "转储日期/匹配开单日期",
@@ -30,7 +30,8 @@ const xsData = {
     },
     {
       title: "转储单号/货期",
-      dataIndex: "dumpId"
+      dataIndex: "dumpId",
+      width: 120
     },
     {
       title: "订货/礼品",
@@ -60,41 +61,41 @@ const xsData = {
     {
       title: "货物名称",
       dataIndex: "goodsName",
-      width: 100
+      width: 140
     },
     {
       title: "数量",
-      dataIndex: "count",
+      dataIndex: "goodsNum",
       width: 80
     },
     {
       title: "金银牌单价",
-      dataIndex: "price1",
+      dataIndex: "unitPrice",
       width: 110
     },
     {
       title: "金银牌总价",
-      dataIndex: "allprice",
+      dataIndex: "sumPrice",
       width: 110
     },
     {
       title: "业绩年份",
-      dataIndex: "year",
+      dataIndex: "xjYear",
       width: 100
     },
     {
       title: "备注",
-      dataIndex: "remark",
+      dataIndex: "memo",
       width: 100
     },
     {
       title: "备注1",
-      dataIndex: "remark1",
+      dataIndex: "memo1",
       width: 100
     },
     {
       title: "备注2",
-      dataIndex: "remark2",
+      dataIndex: "memo2",
       width: 100
     }
   ],
@@ -178,4 +179,28 @@ const residences = [
     ]
   }
 ];
-export { xsData,userMap,residences };
+
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 8 }
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 16 }
+  }
+}
+
+const tailFormItemLayout ={
+  wrapperCol: {
+    xs: {
+      span: 24,
+      offset: 0
+    },
+    sm: {
+      span: 16,
+      offset: 8
+    }
+  }
+}
+export { xsData,userMap,residences,formItemLayout,tailFormItemLayout };

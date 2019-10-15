@@ -75,8 +75,8 @@
         ]"
                     placeholder="请选择用户状态"
                   >
-                    <a-select-option value="0">是</a-select-option>
-                    <a-select-option value="1">否</a-select-option>
+                    <a-select-option value="1">是</a-select-option>
+                    <a-select-option value="0">否</a-select-option>
                   </a-select>
                 </a-form-item>
                 <a-form-item v-bind="formItemLayout" label="角色" has-feedback>
@@ -125,9 +125,9 @@
             <a-select-option value="0">未启用</a-select-option>
           </a-select>
         </template>
-        <template slot="role" slot-scope="text,record">
+        <template slot="role" slot-scope="text1,record">
           <a-select
-            :defaultValue="text"
+            :value="text1"
             style="width: 120px"
             @change="updateInfo(record,'role',$event)"
           >
@@ -143,7 +143,7 @@
 
 <script>
 import EditableCell from "./component/EditableCell";
-import { userMap,residences } from "../../project/unit/dataMap.js";
+import { userMap,residences,formItemLayout,tailFormItemLayout } from "../../project/unit/dataMap.js";
 
 export default {
   name: "userManager",
@@ -169,28 +169,8 @@ export default {
       confirmDirty: false,
       residences,
       autoCompleteResult: [],
-      formItemLayout: {
-        labelCol: {
-          xs: { span: 24 },
-          sm: { span: 8 }
-        },
-        wrapperCol: {
-          xs: { span: 24 },
-          sm: { span: 16 }
-        }
-      },
-      tailFormItemLayout: {
-        wrapperCol: {
-          xs: {
-            span: 24,
-            offset: 0
-          },
-          sm: {
-            span: 16,
-            offset: 8
-          }
-        }
-      }
+      formItemLayout,
+      tailFormItemLayout
     };
   },
   beforeCreate() {
@@ -235,6 +215,7 @@ export default {
               if (res.status == 200) {
                 this.visible = false;
                 this.confirmLoading = false;
+                this.form.resetFields();
                 this.success("新增用户成功!");
                 // this.form.resetFields();
                 setTimeout(() => {
@@ -276,6 +257,8 @@ export default {
             this.error("查询失败");
             this.loading = false;
           });
+      }else{
+        this.handleTableChange(this.pagination);
       }
     },
     // 修改密码
