@@ -1,8 +1,8 @@
 import Vue from "vue";
 import App from "./App.vue";
 import Antd from "ant-design-vue";
-import Vuex from "vuex";
 import axios from "axios";
+import store from './store'
 import Vueaxios from "vue-axios";
 import { router, VueRouter } from "./router.js";
 import "ant-design-vue/dist/antd.css"; // ant ui
@@ -12,7 +12,6 @@ import "./css/font-awesome/css/font-awesome.min.css"; // ant ui
 // axios.defaults.baseURL = 'http://120.27.243.160:8088/'  // url前缀，配置了代理就不用设置
 
 Vue.use(VueRouter);
-Vue.use(Vuex);
 Vue.use(Vueaxios, axios); // vue axios
 Vue.use(Antd); // ant ui
 
@@ -36,6 +35,7 @@ Vue.filter("dateFormat", function(dateStr, pattern = "") {
 });
 
 new Vue({
-  router: router,
+  store,
+  router,
   render: h => h(App)
 }).$mount("#app");

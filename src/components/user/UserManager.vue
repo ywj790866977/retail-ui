@@ -376,8 +376,15 @@ export default {
 
 <style lang="scss" scoped>
 .user_manager {
-  font-size: 1rem;
+  // font-size: .8rem;
+  background: #fbfbfb;
+  padding:1rem;
+  border-radius: 5px;
   .manager_header {
+   
+    //  border-radius: 5px;
+    // padding:1rem;
+    // border-radius: 10px;
     .manager_title {
       text-align: center;
     }
@@ -388,6 +395,8 @@ export default {
   }
 
   .data_table {
+//  border-radius: 5px;
+//     background: #fbfbfb;
     margin-top: 2rem;
     .data_top {
       display: flex;

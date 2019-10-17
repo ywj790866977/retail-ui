@@ -29,14 +29,15 @@ export default {
       this.value = value;
     },
     check() {
-      this.editable = false;
       let isok = true;
       if (!/^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{1,8}$/.test(this.value)) {
-        this.value = this.text;
         isok = false;
-      }
-      // console.log(value);
-      this.$emit("change", { status: isok, value: this.value });
+        this.$emit("change", { status: isok, value: this.text });
+      }else{
+        this.editable = false;
+        this.$emit("change", { status: isok, value: this.value });
+      }      
+     
     },
     edit() {
       this.editable = true;

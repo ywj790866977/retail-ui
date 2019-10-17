@@ -1,9 +1,9 @@
 <template>
-  <div class="components-form-demo-advanced-search">
+  <div class="components-form-demo-advanced-search page">
     <!-- 表单 -->
     <a-form class="ant-advanced-search-form" :form="form" @submit="handleSearch">
       <a-row :gutter="24">
-        <a-col :span="8" style="display:block ">
+        <a-col :span="8" style="display:block">
           <a-form-item v-bind="formItemLayout" label="留货日期">
             <a-range-picker v-decorator="['range-picker']" />
           </a-form-item>
@@ -86,6 +86,13 @@
       </a-row>
     </a-form>
     <div class="search-result-list">
+      <div class="operating_btns">
+        <a-button type="default" class="btn_item">留货</a-button>
+         <a-button type="default" class="btn_item">转储</a-button>
+          <a-button type="default" class="btn_item">释放</a-button>
+          <a-button type="default" class="btn_item">锁定</a-button>
+          <a-button type="default" class="btn_item">取消锁定</a-button>
+      </div>
       <a-table
         :columns="columns"
         :dataSource="data"
@@ -110,12 +117,12 @@ export default {
       expand: false,
       form: this.$form.createForm(this),
       formItemLayout,
-      columns: [],
+      columns: xsData.columns,
       data: []
     };
   },
   created() {
-    this.columns = xsData.columns;
+    // this.columns = xsData.columns;
     // this.data = xsData.data;
   },
   methods: {
@@ -143,7 +150,7 @@ export default {
             });
             this.data = items
           }
-          console.log(res)
+          // console.log(res)
         })
         
         // console.log(error);
@@ -184,7 +191,12 @@ export default {
 
 
 <style lang="scss" scoped>
+// @font-size-base{
+//   font-size:.8rem
+// }
+
 .ant-advanced-search-form {
+  // font-size:.8rem;
   padding: 24px;
   background: #fbfbfb;
   border: 1px solid #d9d9d9;
@@ -198,12 +210,22 @@ export default {
 }
 
 .components-form-demo-advanced-search {
+  font-size: .8rem;
   .ant-form {
     max-width: none;
   }
   .search-result-list {
     margin-top: 16px;
     border-radius: 6px;
+    .operating_btns{
+      background: #fbfbfb;
+      text-align: center;
+      padding:.6rem;
+      border-radius: 5px;
+      .btn_item{
+        margin-left: 1rem;
+      }
+    }
   }
 }
 </style>

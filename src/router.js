@@ -1,13 +1,11 @@
-import UserManager  from "@/components/user/UserManager.vue"
-import QueryData from '@/components/queryData/QueryData.vue';
-
-
 import VueRouter from 'vue-router';
 // import { format } from "url";
 
 const routes = [
-  { path: '/home', component: QueryData  },
-  { path: '/user', component: UserManager  },
+  { path: '/home', component: ()=> import('@/components/queryData/QueryData.vue')  },
+  { path: '/query', component: ()=> import('@/components/queryData/QueryData.vue')  },
+  { path: '/user', component: ()=> import('@/components/user/UserManager.vue')  },
+  { path: '/goods', component: ()=> import('@/components/goods/GoodsApply.vue')  },
 ]
 
 const router = new VueRouter({
