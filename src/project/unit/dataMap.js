@@ -3,14 +3,14 @@ const xsData = {
     {
       title: "留货日期",
       dataIndex: "saveDate",
-      
+
       width: 110
     },
     {
       title: "代理商编号",
       className: "agentId",
       dataIndex: "agentId",
-      width:110
+      width: 110
     },
     {
       title: "代理商名称",
@@ -106,9 +106,8 @@ const xsData = {
       agentId: "1001",
       agentName: "jerry",
       salesName: "超哥",
-      dumpDate:"2019-10-01",
-      dumpId:"123",
-
+      dumpDate: "2019-10-01",
+      dumpId: "123"
     }
   ]
 };
@@ -142,8 +141,8 @@ const userMap = {
       scopedSlots: { customRender: "updateTime" },
       key: "updateTime"
     }
-  ],
-}
+  ]
+};
 
 const residences = [
   {
@@ -189,9 +188,9 @@ const formItemLayout = {
     xs: { span: 24 },
     sm: { span: 16 }
   }
-}
+};
 
-const tailFormItemLayout ={
+const tailFormItemLayout = {
   wrapperCol: {
     xs: {
       span: 24,
@@ -202,5 +201,5 @@ const tailFormItemLayout ={
       offset: 8
     }
   }
-}
-export { xsData,userMap,residences,formItemLayout,tailFormItemLayout };
+};
+export { xsData, userMap, residences, formItemLayout, tailFormItemLayout };

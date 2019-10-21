@@ -87,7 +87,7 @@
     </a-form>
     <div class="search-result-list">
       <div class="operating_btns">
-        <a-button type="default" class="btn_item">留货</a-button>
+        <a-button type="default" class="btn_item"  @click="goodsApply">留货</a-button>
          <a-button type="default" class="btn_item">转储</a-button>
           <a-button type="default" class="btn_item">释放</a-button>
           <a-button type="default" class="btn_item">锁定</a-button>
@@ -109,7 +109,9 @@
 </template>
 
 <script>
-import { xsData, formItemLayout } from "../../project/unit/dataMap";
+import { mapMutations } from 'vuex'
+import { xsData, formItemLayout } from "@/project/unit/dataMap";
+
 export default {
   name: "queryData",
   data() {
@@ -118,14 +120,20 @@ export default {
       form: this.$form.createForm(this),
       formItemLayout,
       columns: xsData.columns,
-      data: []
+      data: [],
+      selectedData:[]
     };
   },
   created() {
-    // this.columns = xsData.columns;
-    // this.data = xsData.data;
   },
   methods: {
+    ...mapMutations('goods',[
+      'SET_GOODSDATAS'
+    ]),
+    goodsApply(){
+      this.SET_GOODSDATAS(this.selectedData)
+      this.$router.push("/goods")
+    },
     //提交查询
     handleSearch(e) {
       e.preventDefault();
@@ -139,10 +147,7 @@ export default {
          fieldsValue.endDate =  rangeValue[1].format("YYYY-MM-DD")
         }
         
-
-        // values["range-picker"] = undefined;
-        // console.log(values);
-        this.axios.get('retail/data/list',{ params: {...fieldsValue}}).then(res=>{
+        this.$http.get('retail/data/list',{ params: {...fieldsValue}}).then(res=>{
           if(res.status ==200){
             let items = res.data.items;
             items.forEach((item, index) => {
@@ -150,11 +155,7 @@ export default {
             });
             this.data = items
           }
-          // console.log(res)
         })
-        
-        // console.log(error);
-        // console.log(fieldsValue);
       });
     },
     // 重置
@@ -168,13 +169,15 @@ export default {
     },
     rowSelection() {
       // const  selectedRowKeys  = this;
+      const that = this;
       return {
         onChange: (selectedRowKeys, selectedRows) => {
-          console.log(
-            `selectedRowKeys: ${selectedRowKeys}`,
-            "selectedRows: ",
-            selectedRows
-          );
+          // console.log(
+          //   `selectedRowKeys: ${selectedRowKeys}`,
+          //   "selectedRows: ",
+          //   selectedRows
+          // );
+          that.selectedData = selectedRows;
         },
         getCheckboxProps: record => ({
           props: {

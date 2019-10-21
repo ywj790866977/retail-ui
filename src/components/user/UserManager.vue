@@ -143,7 +143,7 @@
 
 <script>
 import EditableCell from "./component/EditableCell";
-import { userMap,residences,formItemLayout,tailFormItemLayout } from "../../project/unit/dataMap.js";
+import { userMap,residences,formItemLayout,tailFormItemLayout } from "@/project/unit/dataMap.js";
 
 export default {
   name: "userManager",
@@ -209,7 +209,7 @@ export default {
       this.form.validateFieldsAndScroll((err, values) => {
         if (!err) {
           // console.log("表单内容: ", values);
-          this.axios
+          this.$http
             .post("retail/user", { ...values })
             .then(res => {
               if (res.status == 200) {
@@ -241,7 +241,7 @@ export default {
     onSearch(value) {
       if (value) {
         this.loading = true;
-        this.axios
+        this.$http
           .get(`retail/user/${value}`)
           .then(res => {
             if (res.status == 200) {
@@ -268,7 +268,7 @@ export default {
         this.loading = true;
         let params = { username: key, pwd: obj.value };
 
-        this.axios
+        this.$http
           .put(`retail/user/${key}`, { ...params })
           .then(res => {
             if (res.status == 200) {
@@ -295,7 +295,7 @@ export default {
       if (key[dataIndex] != value) {
         let params = { username: key.username, [dataIndex]: value };
         this.loading = true;
-        this.axios
+        this.$http
           .put(`retail/user/${key.username}`, { ...params })
           .then(res => {
             if (res.status == 200) {
@@ -322,7 +322,7 @@ export default {
     fetch(params = {}) {
       // console.log("params:", params);
       this.loading = true;
-      this.axios
+      this.$http
         .get("retail/user/list", {
           params: {
             ...params
