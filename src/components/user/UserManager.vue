@@ -125,9 +125,9 @@
             <a-select-option value="0">未启用</a-select-option>
           </a-select>
         </template>
-        <template slot="role" slot-scope="text1,record">
+        <template slot="role" slot-scope="text,record">
           <a-select
-            :value="text1"
+            :defaultValue="text =='管理员'? '管理员': '销售员'"
             style="width: 120px"
             @change="updateInfo(record,'role',$event)"
           >
@@ -143,7 +143,12 @@
 
 <script>
 import EditableCell from "./component/EditableCell";
-import { userMap,residences,formItemLayout,tailFormItemLayout } from "@/project/unit/dataMap.js";
+import {
+  userMap,
+  residences,
+  formItemLayout,
+  tailFormItemLayout
+} from "@/project/unit/dataMap.js";
 
 export default {
   name: "userManager",
@@ -211,17 +216,15 @@ export default {
           // console.log("表单内容: ", values);
           this.$http
             .post("retail/user", { ...values })
-            .then(res => {
-              if (res.status == 200) {
-                this.visible = false;
-                this.confirmLoading = false;
-                this.form.resetFields();
-                this.success("新增用户成功!");
-                // this.form.resetFields();
-                setTimeout(() => {
-                  this.handleTableChange(this.pagination);
-                }, 1000);
-              }
+            .then(() => {
+              this.visible = false;
+              this.confirmLoading = false;
+              this.form.resetFields();
+              this.success("新增用户成功!");
+              // this.form.resetFields();
+              setTimeout(() => {
+                this.handleTableChange(this.pagination);
+              }, 1000);
             })
             .catch(() => {
               this.error("新增用户失败！");
@@ -243,21 +246,19 @@ export default {
         this.loading = true;
         this.$http
           .get(`retail/user/${value}`)
-          .then(res => {
-            if (res.status == 200) {
-              let _data = [];
-              res.data.key = 1;
-              _data.push(res.data);
-              this.data = _data;
-              this.pagination.total = 1;
-              this.loading = false;
-            }
+          .then(data => {
+            let _data = [];
+            data.key = 1;
+            _data.push(data);
+            this.data = _data;
+            this.pagination.total = 1;
+            this.loading = false;
           })
           .catch(() => {
             this.error("查询失败");
             this.loading = false;
           });
-      }else{
+      } else {
         this.handleTableChange(this.pagination);
       }
     },
@@ -270,17 +271,15 @@ export default {
 
         this.$http
           .put(`retail/user/${key}`, { ...params })
-          .then(res => {
-            if (res.status == 200) {
-              this.success("修改密码成功！");
-              const dataSource = [...this.data];
-              const target = dataSource.find(item => item.key === key);
-              if (target) {
-                target[dataIndex] = obj.value;
-                this.dataSource = dataSource;
-              }
-              this.loading = false;
+          .then(() => {
+            this.success("修改密码成功！");
+            const dataSource = [...this.data];
+            const target = dataSource.find(item => item.key === key);
+            if (target) {
+              target[dataIndex] = obj.value;
+              this.dataSource = dataSource;
             }
+            this.loading = false;
           })
           .catch(() => {
             this.error("修改密码失败！");
@@ -297,11 +296,10 @@ export default {
         this.loading = true;
         this.$http
           .put(`retail/user/${key.username}`, { ...params })
-          .then(res => {
-            if (res.status == 200) {
-              this.success(`修改成功!`);
-              this.loading = false;
-            }
+          .then(() => {
+            key[dataIndex] = value
+            this.success(`修改成功!`);
+            this.loading = false;
           })
           .catch(() => {
             this.error("修改失败！");
@@ -329,18 +327,16 @@ export default {
           },
           type: "json"
         })
-        .then(res => {
-          if (res.status == 200) {
-            const pagination = { ...this.pagination };
-            pagination.total = res.data.total;
-            let items = res.data.items;
-            items.forEach((item, index) => {
-              item.key = index;
-            });
-            this.data = items;
-            this.loading = false;
-            this.pagination = pagination;
-          }
+        .then(data => {
+          const pagination = { ...this.pagination };
+          pagination.total = data.total;
+          let items = data.items;
+          items.forEach((item, index) => {
+            item.key = index + 1;
+          });
+          this.data = items;
+          this.loading = false;
+          this.pagination = pagination;
         })
         .catch(() => {
           this.error("查询用户列表失败！");
@@ -378,10 +374,9 @@ export default {
 .user_manager {
   // font-size: .8rem;
   background: #fbfbfb;
-  padding:1rem;
+  padding: 1rem;
   border-radius: 5px;
   .manager_header {
-   
     //  border-radius: 5px;
     // padding:1rem;
     // border-radius: 10px;
@@ -395,8 +390,8 @@ export default {
   }
 
   .data_table {
-//  border-radius: 5px;
-//     background: #fbfbfb;
+    //  border-radius: 5px;
+    //     background: #fbfbfb;
     margin-top: 2rem;
     .data_top {
       display: flex;

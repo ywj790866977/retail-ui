@@ -24,7 +24,7 @@ Vue.prototype.$http = service
 
 Vue.config.productionTip = false
 
-console.log(router);
+// console.log(router);
 
 new Vue({
   store,

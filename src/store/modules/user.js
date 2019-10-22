@@ -16,7 +16,7 @@ const mutations = {
   }
 }
 
-const actions = {
+const actions = { 
   // user login
   setInfo({ commit }, userInfo) {
     // console.log(commit)
