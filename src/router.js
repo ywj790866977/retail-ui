@@ -1,6 +1,6 @@
 import HelloWorld from "@/components/HelloWorld";
 import VueRouter from 'vue-router';
-import store from './store'
+// import store from './store'
 
 const routes = [
   { path: '/home', component: HelloWorld  },
@@ -15,8 +15,8 @@ const router = new VueRouter({
 })
 router.beforeEach((to, from, next) => {
 
-  console.log(store)
-  store.dispatch("user/setInfo",{name:"1"});
+  // console.log(store)
+  // store.dispatch("user/setInfo",{name:"1"});
   // request({
   //     url: '/user',
   //     method: 'GET',

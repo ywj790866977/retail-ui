@@ -13,7 +13,7 @@
       </a-row>
       <a-row>
         <a-col :span="8" class="title">
-          <span>销售员:</span>王天枢
+          <span>销售员:</span>{{name}}
         </a-col>
         <a-col :span="8" class="title">
           <span>申请日期:</span>2019-7-25
@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState,mapGetters } from "vuex";
 // const { mapState } = createNamespacedHelpers('goods')
 import { xsData } from "@/project/unit/dataMap";
 import { countDown } from "@/project/utils/time";
@@ -69,6 +69,7 @@ export default {
   created() {
     this.data = this.goodsData;
     this.countClearData()
+    console.log(this.name)
   },
   methods: {
     goodsApply() {
@@ -89,6 +90,8 @@ export default {
   },
   computed: {
     ...mapState("goods", ["goodsData", "test"]),
+    // ...mapState("user", ["name", "role"]),
+    ...mapGetters(['name','roles']),
     rowSelection() {
       // const  selectedRowKeys  = this
       // const that = this;

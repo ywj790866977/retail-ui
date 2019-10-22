@@ -147,14 +147,13 @@ export default {
          fieldsValue.endDate =  rangeValue[1].format("YYYY-MM-DD")
         }
         
-        this.$http.get('retail/data/list',{ params: {...fieldsValue}}).then(res=>{
-          if(res.status ==200){
-            let items = res.data.items;
+        this.$http.get('retail/data/list',{ params: {...fieldsValue}}).then(data=>{
+            let items = data.items;
             items.forEach((item, index) => {
               item.key = index;
             });
             this.data = items
-          }
+          
         })
       });
     },
