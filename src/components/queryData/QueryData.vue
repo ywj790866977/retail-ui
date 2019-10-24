@@ -64,17 +64,59 @@
             <a-input v-decorator="[`dumpId` ]" />
           </a-form-item>
         </a-col>
-        <a-col :span="8" style="display:block ">
-          <a-form-item v-bind="formItemLayout" label="是否锁定" has-feedback>
+        <a-col v-show="flag" :span="8" style="display:block ">
+          <a-form-item v-bind="formItemLayout" :label="`是否删除物料`">
+            <a-select v-decorator="['isDeleteBomCode']">
+              <a-select-option value="0">是</a-select-option>
+              <a-select-option value="1">否</a-select-option>
+              <a-select-option value="2">全部</a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+        <a-col v-show="flag" :span="8" style="display:block ">
+          <a-form-item v-bind="formItemLayout" :label="`是否更改批次`">
+            <a-select v-decorator="['isModifyBatch']">
+              <a-select-option value="0">是</a-select-option>
+              <a-select-option value="1">否</a-select-option>
+              <a-select-option value="2">全部</a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+        <a-col v-show="flag" :span="8" style="display:block ">
+          <a-form-item v-bind="formItemLayout" label="是否锁定">
             <a-select v-decorator="['isLock']">
               <a-select-option value="0">是</a-select-option>
               <a-select-option value="1">否</a-select-option>
+              <a-select-option value="2">全部</a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+        <a-col v-show="flag" :span="8" style="display:block ">
+          <a-form-item v-bind="formItemLayout" :label="`是否在EB中已更改`">
+            <a-select v-decorator="['isModifyEB']">
+              <a-select-option value="0">是</a-select-option>
+              <a-select-option value="1">否</a-select-option>
+              <a-select-option value="2">全部</a-select-option>
             </a-select>
           </a-form-item>
         </a-col>
         <a-col :span="8" style="display:block ">
           <a-form-item v-bind="formItemLayout" :label="`华为物料号`">
             <a-input v-decorator="[`bomCode` ]" />
+          </a-form-item>
+        </a-col>
+        <a-col v-show="flag" :span="8" style="display:block ">
+          <a-form-item v-bind="formItemLayout" :label="`更改后批次`">
+            <a-input v-decorator="[`nowBatch` ]" />
+          </a-form-item>
+        </a-col>
+        <a-col v-show="flag" :span="8" style="display:block ">
+          <a-form-item v-bind="formItemLayout" :label="`数量是否为负`">
+            <a-select v-decorator="['isNegativeNum']">
+              <a-select-option value="0">是</a-select-option>
+              <a-select-option value="1">否</a-select-option>
+              <a-select-option value="2">全部</a-select-option>
+            </a-select>
           </a-form-item>
         </a-col>
       </a-row>
@@ -85,32 +127,43 @@
         </a-col>
       </a-row>
     </a-form>
+    <a-table
+      :columns="columns"
+      :dataSource="data"
+      :rowSelection="rowSelection"
+      bordered
+      :scroll="{ x: 2200 }"
+      class="myfont"
+    >
+      <!-- <template slot="name" slot-scope="text">
+          <a href="javascript:;">{{text}}</a>
+      </template>-->
+    </a-table>
     <div class="search-result-list">
       <div class="operating_btns">
-        <a-button type="default" class="btn_item"  @click="goodsApply">留货</a-button>
-         <a-button type="default" class="btn_item">转储</a-button>
-          <a-button type="default" class="btn_item">释放</a-button>
-          <a-button type="default" class="btn_item">锁定</a-button>
-          <a-button type="default" class="btn_item">取消锁定</a-button>
+        <a-button type="default" class="btn_item select_self_btn">已选中的数据</a-button>
+        <a-button type="default" class="btn_item" @click="goodsApply">留货</a-button>
+        <a-button type="default" class="btn_item" @click="dumpApply">转储</a-button>
+        <a-button type="default" class="btn_item" @click="releaseApply">释放</a-button>
+        <a-button type="default" class="btn_item">锁定</a-button>
+        <a-button type="default" class="btn_item">取消锁定</a-button>
       </div>
-      <a-table
-        :columns="columns"
-        :dataSource="data"
-        :rowSelection="rowSelection"
-        bordered
-        :scroll="{ x: 2200 }"
-      >
-        <!-- <template slot="name" slot-scope="text">
-          <a href="javascript:;">{{text}}</a>
-        </template> -->
-      </a-table>
     </div>
+    <a-table
+      :columns="columns"
+      :dataSource="selectedData"
+      :rowSelection="rowSelection"
+      bordered
+      :scroll="{ x: 2200 }"
+    ></a-table>
   </div>
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapMutations } from "vuex";
+// import { mapState } from "vuex";
 import { xsData, formItemLayout } from "@/project/unit/dataMap";
+import { glData } from "@/project/unit/dataMap2";
 
 export default {
   name: "queryData",
@@ -119,20 +172,45 @@ export default {
       expand: false,
       form: this.$form.createForm(this),
       formItemLayout,
-      columns: xsData.columns,
+      roles: "管理员",
+      columns: [],
       data: [],
-      selectedData:[]
+      selectedData: [],
+      flag: false
     };
   },
   created() {
+    this.flag = this.roles === "管理员";
+    this.columns = this.flag ? glData.columns : xsData.columns;
   },
   methods: {
-    ...mapMutations('goods',[
-      'SET_GOODSDATAS'
-    ]),
-    goodsApply(){
-      this.SET_GOODSDATAS(this.selectedData)
-      this.$router.push("/goods")
+    ...mapMutations("goods", ["SET_GOODSDATAS"]),
+    goodsApply() {
+      console.log(this.selectedData);
+      this.$http.post("/retail/data/tmp/left", this.selectedData).then(data => {
+        // console.log(data);
+        if (data.status != 200) {
+          if (data.status == 2506) {
+            this.$notification["error"]({
+              message: "还有未完成的留货申请,请完成后再试"
+            });
+          } else if (data.status == 2507) {
+            this.$notification["error"]({
+              message: "申请数量超过库存数量,提交失败"
+            });
+          }
+        } else {
+          this.$router.push("/goods");
+        }
+      });
+    },
+    dumpApply() {
+      this.SET_GOODSDATAS(this.selectedData);
+      this.$router.push("/dump");
+    },
+    releaseApply() {
+      this.SET_GOODSDATAS(this.selectedData);
+      this.$router.push("/release");
     },
     //提交查询
     handleSearch(e) {
@@ -141,20 +219,21 @@ export default {
         // if (!error) {
         // console.log(fieldsValue);
         const rangeValue = fieldsValue["range-picker"];
-        delete fieldsValue["range-picker"]
+        delete fieldsValue["range-picker"];
         if (rangeValue) {
-         fieldsValue.startDate =  rangeValue[0].format("YYYY-MM-DD");
-         fieldsValue.endDate =  rangeValue[1].format("YYYY-MM-DD")
+          fieldsValue.startDate = rangeValue[0].format("YYYY-MM-DD");
+          fieldsValue.endDate = rangeValue[1].format("YYYY-MM-DD");
         }
-        
-        this.$http.get('retail/data/list',{ params: {...fieldsValue}}).then(data=>{
+        // console.log({ ...fieldsValue });
+        this.$http
+          .get("retail/data/list", { params: { ...fieldsValue } })
+          .then(data => {
             let items = data.items;
             items.forEach((item, index) => {
               item.key = index;
             });
-            this.data = items
-          
-        })
+            this.data = items;
+          });
       });
     },
     // 重置
@@ -163,6 +242,7 @@ export default {
     }
   },
   computed: {
+    // ...mapState("user", ["name", "roles"]),
     count() {
       return this.expand ? 11 : 7;
     },
@@ -212,22 +292,30 @@ export default {
 }
 
 .components-form-demo-advanced-search {
-  font-size: .8rem;
+  font-size: 0.8rem;
   .ant-form {
     max-width: none;
   }
   .search-result-list {
     margin-top: 16px;
     border-radius: 6px;
-    .operating_btns{
+    .operating_btns {
       background: #fbfbfb;
       text-align: center;
-      padding:.6rem;
+      padding: 0.6rem;
       border-radius: 5px;
-      .btn_item{
+      .btn_item {
         margin-left: 1rem;
       }
     }
   }
+}
+
+.select_self_btn {
+  float: left;
+}
+
+.myfont {
+  font-size: 5px;
 }
 </style>

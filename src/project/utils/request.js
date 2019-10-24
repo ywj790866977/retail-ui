@@ -1,7 +1,7 @@
 import axios from 'axios'
 // create an axios instance
 const service = axios.create({
-  baseURL: '/api', // url = base url + request url
+  baseURL: '/retail', // url = base url + request url
   timeout: 5000 // request timeout
 })
 
@@ -19,9 +19,7 @@ service.interceptors.request.use(
 
 // response interceptor
 service.interceptors.response.use(
-  response => {
-    // const res = response.data
-    const res = response
+  res => {
     // if the custom code is not 20000, it is judged as an error.
     if (res.status !== 200) {
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
@@ -31,7 +29,16 @@ service.interceptors.response.use(
       }
       return Promise.reject(new Error(res.messsage || 'Error'))
     } else {
-      return res.data
+      let data = res.data;
+      if (data.status !== 200) {
+        // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
+        if (data.status === 401) {
+          // to re-login
+          location.href = "/manage/login";
+        }
+        return Promise.reject(new Error(res.messsage || 'Error'))
+      }
+      return data;
     }
   },
   error => {
