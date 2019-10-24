@@ -9,8 +9,8 @@ const name = '平安智慧行政平台' // page title
 const port = 9528 // dev port
 
 module.exports = {
-  publicPath: process.env.BASE_PATH || '/',
-  outputDir: process.env.OUTPUT_DIR || 'dist',
+  publicPath: process.env.BASE_PATH || '/ui',
+  outputDir: process.env.OUTPUT_DIR || '/ui',
   assetsDir: 'static',
   lintOnSave: process.env.NODE_ENV === 'development',
   productionSourceMap: false,
@@ -23,15 +23,12 @@ module.exports = {
     },
     // http://39.98.71.124:8080
     proxy: {
-      '/api': {
+      '/retail': {
         // target: 'http://39.98.71.124:8080/api',
         target:'http://120.27.243.160:8088',
         // target: 'http://localhost:8080/api',
         secure: false,
-        changeOrigin: true,
-        pathRewrite: {
-          '^/api': '/'
-        }
+        changeOrigin: true
       }
     }
   },
