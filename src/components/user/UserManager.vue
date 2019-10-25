@@ -215,7 +215,7 @@ export default {
         if (!err) {
           // console.log("表单内容: ", values);
           this.$http
-            .post("retail/user", { ...values })
+            .post("user", { ...values })
             .then(() => {
               this.visible = false;
               this.confirmLoading = false;
@@ -245,7 +245,7 @@ export default {
       if (value) {
         this.loading = true;
         this.$http
-          .get(`retail/user/${value}`)
+          .get(`user/${value}`)
           .then(data => {
             let _data = [];
             data.key = 1;
@@ -270,7 +270,7 @@ export default {
         let params = { username: key, pwd: obj.value };
 
         this.$http
-          .put(`retail/user/${key}`, { ...params })
+          .put(`user/${key}`, { ...params })
           .then(() => {
             this.success("修改密码成功！");
             const dataSource = [...this.data];
@@ -295,7 +295,7 @@ export default {
         let params = { username: key.username, [dataIndex]: value };
         this.loading = true;
         this.$http
-          .put(`retail/user/${key.username}`, { ...params })
+          .put(`user/${key.username}`, { ...params })
           .then(() => {
             key[dataIndex] = value
             this.success(`修改成功!`);
@@ -321,7 +321,7 @@ export default {
       // console.log("params:", params);
       this.loading = true;
       this.$http
-        .get("retail/user/list", {
+        .get("user/list", {
           params: {
             ...params
           },

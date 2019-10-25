@@ -154,7 +154,7 @@
       :dataSource="selectedData"
       :rowSelection="rowSelection"
       bordered
-      :scroll="{ x: 2200 }"
+      :scroll="{ x: 2400 }"
     ></a-table>
   </div>
 </template>
@@ -184,16 +184,17 @@ export default {
     this.columns = this.flag ? glData.columns : xsData.columns;
   },
   methods: {
-    ...mapMutations("goods", ["SET_GOODSDATAS"]),
+    ...mapMutations("goods", ["SET_GOODSDATAS","SET_GOODSTIEM"]),
     goodsApply() {
-      console.log(this.selectedData);
-      this.$http.post("/retail/data/tmp/left", this.selectedData).then(data => {
+      // console.log(this.selectedData);
+      this.$http.post("/data/tmp/left", this.selectedData).then(data => {
         // console.log(data);
         if (data.status != 200) {
           if (data.status == 2506) {
             this.$notification["error"]({
               message: "还有未完成的留货申请,请完成后再试"
             });
+            
           } else if (data.status == 2507) {
             this.$notification["error"]({
               message: "申请数量超过库存数量,提交失败"
@@ -201,6 +202,7 @@ export default {
           }
         } else {
           this.$router.push("/goods");
+          this.SET_GOODSTIEM(new Date())
         }
       });
     },
@@ -226,9 +228,9 @@ export default {
         }
         // console.log({ ...fieldsValue });
         this.$http
-          .get("retail/data/list", { params: { ...fieldsValue } })
+          .get("/data/list", { params: { ...fieldsValue } })
           .then(data => {
-            let items = data.items;
+            let items = data.list;
             items.forEach((item, index) => {
               item.key = index;
             });

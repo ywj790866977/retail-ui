@@ -1,7 +1,8 @@
 
 const state = {
   goodsData:[],
-  test:"傻逼"
+  test:"傻逼",
+  goodsTime:''
 }
 
 const mutations = {
@@ -11,11 +12,15 @@ const mutations = {
   SET_TEST: (state, newValue) => {
     state.test = newValue
   },
+  SET_GOODSTIEM:(state,newValue)=>{
+    state.goodsTime = newValue
+  }
 }
 
 const getters = {
   goodsDatas: state => state.goodsData,
-  test1:state => state.test
+  test1:state => state.test,
+  getGoodsTime: state => state.goodsTime 
 }
 
 export default {

@@ -9,7 +9,8 @@ import "./css/font-awesome/css/font-awesome.min.css";
 import { router,VueRouter } from './router.js';
 import Vuex from 'vuex';
 import store from './store'
-import filters from './project/utils/filter'
+import filters from '@/project/utils/filter'
+
 
 Vue.use(VueRouter);
 Vue.use(Vuex);

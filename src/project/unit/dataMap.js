@@ -20,7 +20,7 @@ const xsData = {
     {
       title: "销售员",
       dataIndex: "salesName",
-      scopedSlots: { customRender: "name" },
+      scopedSlots: { customRender: "salesName" },
       width: 80
     },
     {
@@ -99,17 +99,17 @@ const xsData = {
       width: 100
     }
   ],
-  data: [
-    {
-      key: "1",
-      date: "John Brown",
-      agentId: "1001",
-      agentName: "jerry",
-      salesName: "超哥",
-      dumpDate: "2019-10-01",
-      dumpId: "123"
-    }
-  ]
+  // data: [
+  //   {
+  //     key: "1",
+  //     date: "John Brown",
+  //     agentId: "1001",
+  //     agentName: "jerry",
+  //     salesName: "超哥",
+  //     dumpDate: "2019-10-01",
+  //     dumpId: "123"
+  //   }
+  // ]
 };
 
 const userMap = {
