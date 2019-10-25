@@ -152,7 +152,8 @@ export default {
       this.form.validateFieldsAndScroll((err, values) => {
         if (!err) {
           // console.log("表单内容: ", values);
-          this.$http.post("user", { ...values})
+          this.$http
+            .post("user", { ...values })
             .then(() => {
               this.visible = false;
               this.confirmLoading = false;
@@ -210,8 +211,7 @@ export default {
         };
 
         this.$http
-          .put(`user/${key}`, { ...params
-          })
+          .put(`user/${key}`, { ...params })
           .then(() => {
             this.success("修改密码成功！");
             const dataSource = [...this.data];
@@ -239,8 +239,7 @@ export default {
         };
         this.loading = true;
         this.$http
-          .put(`user/${key.username}`, { ...params
-          })
+          .put(`user/${key.username}`, { ...params })
           .then(() => {
             key[dataIndex] = value
             this.success(`修改成功!`);

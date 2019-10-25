@@ -1,3 +1,4 @@
+
 const state = {
   name: '',
   roles: {}
@@ -16,7 +17,7 @@ const actions = {
   // user login
   setInfo({ commit }, userInfo) {
       commit('SET_NAME', userInfo.name)
-      commit('SET_ROLES', userInfo.role)
+      commit('SET_ROLES', '销售员')
   }
 }
 

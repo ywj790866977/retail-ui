@@ -20,7 +20,7 @@ const xsData = {
     {
       title: "销售员",
       dataIndex: "salesName",
-      scopedSlots: { customRender: "name" },
+      scopedSlots: { customRender: "salesName" },
       width: 80
     },
     {
