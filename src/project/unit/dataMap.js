@@ -61,7 +61,7 @@ const xsData = {
     {
       title: "货物名称",
       dataIndex: "goodsName",
-      width: 140
+      width: 200
     },
     {
       title: "数量",
@@ -96,20 +96,9 @@ const xsData = {
     {
       title: "备注2",
       dataIndex: "memo2",
-      width: 100
+      width: 500
     }
   ],
-  data: [
-    {
-      key: "1",
-      date: "John Brown",
-      agentId: "1001",
-      agentName: "jerry",
-      salesName: "超哥",
-      dumpDate: "2019-10-01",
-      dumpId: "123"
-    }
-  ]
 };
 
 const userMap = {
@@ -144,41 +133,6 @@ const userMap = {
   ]
 };
 
-const residences = [
-  {
-    value: "zhejiang",
-    label: "Zhejiang",
-    children: [
-      {
-        value: "hangzhou",
-        label: "Hangzhou",
-        children: [
-          {
-            value: "xihu",
-            label: "West Lake"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    value: "jiangsu",
-    label: "Jiangsu",
-    children: [
-      {
-        value: "nanjing",
-        label: "Nanjing",
-        children: [
-          {
-            value: "zhonghuamen",
-            label: "Zhong Hua Men"
-          }
-        ]
-      }
-    ]
-  }
-];
-
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
@@ -202,4 +156,4 @@ const tailFormItemLayout = {
     }
   }
 };
-export { xsData, userMap, residences, formItemLayout, tailFormItemLayout };
+export { xsData, userMap, formItemLayout, tailFormItemLayout };
