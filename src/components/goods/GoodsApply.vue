@@ -50,7 +50,7 @@
           :dataSource="data"
           :rowSelection="rowSelection"
           bordered
-          
+          :scroll="{ x: 3200 }"
           @change="handleTableChange"
         >
           <template slot="goodsNum" slot-scope="text">
@@ -59,16 +59,15 @@
             <span>{{text}}</span>
           </template>
           <template slot="newAgentName" slot-scope="text">
-            <a-auto-complete
-            
+            <!-- <a-auto-complete
             :dataSource="searchAgents"
             style="width: 150px"
             @select="onSelect"
             @search="handleSearch"
             placeholder="请输入代理商关键字"
             allowClear
-            />
-            <!-- <div>{{text}}</div> -->
+            /> -->
+            <div>{{text}}</div>
           </template>
         </a-table>
       </div>

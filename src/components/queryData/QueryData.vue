@@ -171,7 +171,6 @@ import { mapMutations } from "vuex";
 // import { mapState } from "vuex";
 import { xsData, formItemLayout } from "@/project/unit/dataMap";
 import { glData } from "@/project/unit/dataMap2";
-
 export default {
   name: "queryData",
   data() {
@@ -191,9 +190,12 @@ export default {
     this.columns = this.flag ? glData.columns : xsData.columns;
   },
   methods: {
-    ...mapMutations("goods", ["SET_GOODSDATAS","SET_GOODSTIEM"]),
+    expand(){
+        this.expanded = !this.expanded;
+      },
+    ...mapMutations("goods", ["SET_GOODSDATAS"]),
     goodsApply() {
-      // console.log(this.selectedData);
+      console.log(this.selectedData);
       this.$http.post("/data/tmp/left", this.selectedData).then(data => {
         // console.log(data);
         if (data.status != 200) {
@@ -201,7 +203,6 @@ export default {
             this.$notification["error"]({
               message: "还有未完成的留货申请,请完成后再试"
             });
-            
           } else if (data.status == 2507) {
             this.$notification["error"]({
               message: "申请数量超过库存数量,提交失败"
@@ -209,7 +210,6 @@ export default {
           }
         } else {
           this.$router.push("/goods");
-          this.SET_GOODSTIEM(new Date())
         }
       });
     },
@@ -235,7 +235,7 @@ export default {
         }
         // console.log({ ...fieldsValue });
         this.$http
-          .get("/data/list", { params: { ...fieldsValue } })
+          .get("data/list", { params: { ...fieldsValue } })
           .then(data => {
             let items = data.list;
             items.forEach((item, index) => {
@@ -252,7 +252,6 @@ export default {
   },
   computed: {
     // ...mapState("user", ["name", "roles"]),
-
     rowSelection() {
       // const  selectedRowKeys  = this;
       const that = this;
@@ -301,7 +300,6 @@ export default {
     flex: 1;
   }
 }
-
 .components-form-demo-advanced-search {
   font-size: 14px;
   .ant-form {
@@ -321,12 +319,9 @@ export default {
     }
   }
 }
-
-
 .select_self_btn {
   float: left;
 }
-
 .myfont {
   font-size: 5px;
 }
@@ -334,5 +329,4 @@ export default {
   height: 45px;
   overflow: hidden;
 }
-
 </style>

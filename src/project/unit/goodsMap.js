@@ -116,20 +116,11 @@ const
     {
       title: "备注2",
       dataIndex: "memo2",
-      width: 100
+      width: 500
     }
   ]
-  // data: [
-  //   {
-  //     key: "1",
-  //     date: "John Brown",
-  //     agentId: "1001",
-  //     agentName: "jerry",
-  //     salesName: "超哥",
-  //     dumpDate: "2019-10-01",
-  //     dumpId: "123"
-  //   }
-  // ]
+
+
 
   const  
   adminRow = [
@@ -249,7 +240,7 @@ const
     {
       title: "备注2",
       dataIndex: "memo2",
-      width: 100
+      width: 500
     },
     {
       title: "当前批次",
