@@ -1,144 +1,82 @@
 <template>
-  <div class="user_manager">
-    <!-- 头 -->
-    <div class="manager_header">
-      <h3 class="manager_title">账户管理</h3>
-      <div class="serarch">
-        <span>itcode:</span>
-        <a-input-search placeholder="请输入itcode" @search="onSearch" />
-      </div>
+<div class="user_manager">
+  <!-- 头 -->
+  <div class="manager_header">
+    <h3 class="manager_title">账户管理</h3>
+    <div class="serarch">
+      <span>itcode:</span>
+      <a-input-search placeholder="请输入itcode" @search="onSearch" />
     </div>
-    <!-- 展示数据 -->
-    <div class="data_table">
-      <div class="data_top">
-        <h4>用户列表：</h4>
-        <div>
-          <a-button type="primary" icon="plus" @click="showUserModal">新增用户</a-button>
-          <a-modal
-            title="新增用户"
-            :visible="visible"
-            @ok="handleOk"
-            :confirmLoading="confirmLoading"
-            @cancel="handleCancel"
-          >
-            <div>
-              <a-form :form="form" @submit="handleOk">
-                <a-form-item v-bind="formItemLayout" label="itCode" has-feedback>
-                  <a-input
-                    v-decorator="[
-          'username',
-          {
-            rules: [ {
-              required: true, message: '请输入itCode!',
-            }]
-          }
-        ]"
-                  />
-                </a-form-item>
-                <a-form-item v-bind="formItemLayout" label="姓名" has-feedback>
-                  <!-- <span slot="label" >
+  </div>
+  <!-- 展示数据 -->
+  <div class="data_table">
+    <div class="data_top">
+      <h4>用户列表：</h4>
+      <div>
+        <a-button type="primary" icon="plus" @click="showUserModal">新增用户</a-button>
+        <a-modal title="新增用户" :visible="visible" @ok="handleOk" :confirmLoading="confirmLoading" @cancel="handleCancel">
+          <div>
+            <a-form :form="form" @submit="handleOk">
+              <a-form-item v-bind="formItemLayout" label="itCode" has-feedback>
+                <a-input v-decorator="['username',{rules:[{required: true, message: '请输入itCode!',}]}]" />
+              </a-form-item>
+              <a-form-item v-bind="formItemLayout" label="姓名" has-feedback>
+                <!-- <span slot="label" >
                     姓名&nbsp;
                     <a-tooltip title="真实姓名?">
                       <a-icon type="question-circle-o" />
                     </a-tooltip>
                   </span>-->
-                  <a-input
-                    v-decorator="[
-          'name',
-          {
-            rules: [{ required: true, message: '请输入真实姓名!', whitespace: true }]
-          }
-        ]"
-                  />
-                </a-form-item>
-                <a-form-item v-bind="formItemLayout" label="密码" has-feedback>
-                  <a-input
-                    v-decorator="[
-          'pwd',
-          {
-            rules: [{
-              required: true, message: '请输入密码 !',
-            }, {
-              validator: validateToNextPassword,
-            }],
-          }
-        ]"
-                    type="password"
-                  />
-                </a-form-item>
+                <a-input v-decorator="['name',{rules: [{ required: true, message: '请输入真实姓名!', whitespace: true }]}]" />
+              </a-form-item>
+              <a-form-item v-bind="formItemLayout" label="密码" has-feedback>
+                <a-input v-decorator="['pwd',{rules: [{required: true, message: '请输入密码 !',}, {validator: validateToNextPassword,}]}]" type="password" />
+              </a-form-item>
 
-                <a-form-item v-bind="formItemLayout" label="启用" has-feedback>
-                  <a-select
-                    v-decorator="[
-          'status',
-          {rules: [{ required: true, message: '请选择用户状态！' }]}
-        ]"
-                    placeholder="请选择用户状态"
-                  >
-                    <a-select-option value="1">是</a-select-option>
-                    <a-select-option value="0">否</a-select-option>
-                  </a-select>
-                </a-form-item>
-                <a-form-item v-bind="formItemLayout" label="角色" has-feedback>
-                  <a-select
-                    v-decorator="[
-          'role',
-          {rules: [{ required: true, message: '请选择用户角色!' }]}
-        ]"
-                    placeholder="请选择角色"
-                  >
-                    <a-select-option value="管理员">管理员</a-select-option>
-                    <a-select-option value="销售员">销售员</a-select-option>
-                  </a-select>
-                </a-form-item>
-                <!-- <a-form-item v-bind="tailFormItemLayout">
+              <a-form-item v-bind="formItemLayout" label="启用" has-feedback>
+                <a-select v-decorator="['status', {rules: [{ required: true, message: '请选择用户状态！' }]}]" placeholder="请选择用户状态">
+                  <a-select-option value="1">是</a-select-option>
+                  <a-select-option value="0">否</a-select-option>
+                </a-select>
+              </a-form-item>
+              <a-form-item v-bind="formItemLayout" label="角色" has-feedback>
+                <a-select v-decorator="['role',{rules: [{ required: true, message: '请选择用户角色!' }]}]" placeholder="请选择角色">
+                  <a-select-option value="管理员">管理员</a-select-option>
+                  <a-select-option value="销售员">销售员</a-select-option>
+                </a-select>
+              </a-form-item>
+              <!-- <a-form-item v-bind="tailFormItemLayout">
                   <a-button type="primary" html-type="submit">Register</a-button>
                 </a-form-item>-->
-              </a-form>
-            </div>
-          </a-modal>
-        </div>
+            </a-form>
+          </div>
+        </a-modal>
       </div>
-
-      <a-table
-        :columns="columns"
-        :dataSource="data"
-        bordered
-        :pagination="pagination"
-        :loading="loading"
-        @change="handleTableChange"
-        :rowKey="data.id"
-      >
-        <template slot="name" slot-scope="text">
-          <a href="javascript:;">{{text}}</a>
-        </template>
-        <template slot="pwd" slot-scope="text, record">
-          <editable-cell :text="text" @change="updatePwd(record.username, 'pwd', $event)" />
-        </template>
-        <template slot="status" slot-scope="text,record">
-          <a-select
-            :defaultValue="text == 1? '启用': '未启用'"
-            style="width: 120px"
-            @change="updateInfo(record,'status',$event)"
-          >
-            <a-select-option value="1">启用</a-select-option>
-            <a-select-option value="0">未启用</a-select-option>
-          </a-select>
-        </template>
-        <template slot="role" slot-scope="text,record">
-          <a-select
-            :defaultValue="text =='管理员'? '管理员': '销售员'"
-            style="width: 120px"
-            @change="updateInfo(record,'role',$event)"
-          >
-            <a-select-option value="管理员">管理员</a-select-option>
-            <a-select-option value="销售员">销售员</a-select-option>
-          </a-select>
-        </template>
-        <template slot="updateTime" slot-scope="text">{{text | dateFormat}}</template>
-      </a-table>
     </div>
+
+    <a-table :columns="columns" :dataSource="data" bordered :pagination="pagination" :loading="loading" @change="handleTableChange" :rowKey="data.id">
+      <template slot="name" slot-scope="text">
+        <a href="javascript:;">{{text}}</a>
+      </template>
+      <template slot="pwd" slot-scope="text, record">
+        <editable-cell :text="text" @change="updatePwd(record.username, 'pwd', $event)" />
+      </template>
+      <template slot="status" slot-scope="text,record">
+        <a-select :defaultValue="text == 1? '启用': '未启用'" style="width: 120px" @change="updateInfo(record,'status',$event)">
+          <a-select-option value="1">启用</a-select-option>
+          <a-select-option value="0">未启用</a-select-option>
+        </a-select>
+      </template>
+      <template slot="role" slot-scope="text,record">
+        <a-select :defaultValue="text =='管理员'? '管理员': '销售员'" style="width: 120px" @change="updateInfo(record,'role',$event)">
+          <a-select-option value="管理员">管理员</a-select-option>
+          <a-select-option value="销售员">销售员</a-select-option>
+        </a-select>
+      </template>
+      <template slot="updateTime" slot-scope="text">{{text | dateFormat}}</template>
+    </a-table>
   </div>
+</div>
 </template>
 
 <script>
@@ -214,8 +152,7 @@ export default {
       this.form.validateFieldsAndScroll((err, values) => {
         if (!err) {
           // console.log("表单内容: ", values);
-          this.$http
-            .post("retail/user", { ...values })
+          this.$http.post("user", { ...values})
             .then(() => {
               this.visible = false;
               this.confirmLoading = false;
@@ -245,7 +182,7 @@ export default {
       if (value) {
         this.loading = true;
         this.$http
-          .get(`retail/user/${value}`)
+          .get(`user/${value}`)
           .then(data => {
             let _data = [];
             data.key = 1;
@@ -267,10 +204,14 @@ export default {
       // console.log(key, dataIndex, obj);
       if (obj.status) {
         this.loading = true;
-        let params = { username: key, pwd: obj.value };
+        let params = {
+          username: key,
+          pwd: obj.value
+        };
 
         this.$http
-          .put(`retail/user/${key}`, { ...params })
+          .put(`user/${key}`, { ...params
+          })
           .then(() => {
             this.success("修改密码成功！");
             const dataSource = [...this.data];
@@ -292,10 +233,14 @@ export default {
     // 修改属性
     updateInfo(key, dataIndex, value) {
       if (key[dataIndex] != value) {
-        let params = { username: key.username, [dataIndex]: value };
+        let params = {
+          username: key.username,
+          [dataIndex]: value
+        };
         this.loading = true;
         this.$http
-          .put(`retail/user/${key.username}`, { ...params })
+          .put(`user/${key.username}`, { ...params
+          })
           .then(() => {
             key[dataIndex] = value
             this.success(`修改成功!`);
@@ -309,7 +254,8 @@ export default {
     },
     // 分页显示
     handleTableChange(pagination) {
-      const pager = { ...this.pagination };
+      const pager = { ...this.pagination
+      };
       pager.current = pagination.current || 1;
       this.pagination = pager;
       this.fetch({
@@ -321,22 +267,21 @@ export default {
       // console.log("params:", params);
       this.loading = true;
       this.$http
-        .get("retail/user/list", {
+        .get("user/list", {
           params: {
             ...params
           },
           type: "json"
         })
         .then(data => {
-          const pagination = { ...this.pagination };
-          pagination.total = data.total;
-          let items = data.items;
+
+          this.pagination.total = data.pager.total;
+          let items = data.list;
           items.forEach((item, index) => {
             item.key = index + 1;
           });
           this.data = items;
           this.loading = false;
-          this.pagination = pagination;
         })
         .catch(() => {
           this.error("查询用户列表失败！");
@@ -372,33 +317,33 @@ export default {
 
 <style lang="scss" scoped>
 .user_manager {
-  // font-size: .8rem;
-  background: #fbfbfb;
-  padding: 1rem;
-  border-radius: 5px;
-  .manager_header {
-    //  border-radius: 5px;
-    // padding:1rem;
-    // border-radius: 10px;
-    .manager_title {
-      text-align: center;
+    // font-size: .8rem;
+    background: #fbfbfb;
+    padding: 1rem;
+    border-radius: 5px;
+    .manager_header {
+        //  border-radius: 5px;
+        // padding:1rem;
+        // border-radius: 10px;
+        .manager_title {
+            text-align: center;
+        }
+        .serarch {
+            display: flex;
+            width: 30%;
+        }
     }
-    .serarch {
-      display: flex;
-      width: 30%;
-    }
-  }
 
-  .data_table {
-    //  border-radius: 5px;
-    //     background: #fbfbfb;
-    margin-top: 2rem;
-    .data_top {
-      display: flex;
-      justify-content: space-between;
-      margin-right: 1rem;
-      margin-bottom: 1rem;
+    .data_table {
+        //  border-radius: 5px;
+        //     background: #fbfbfb;
+        margin-top: 2rem;
+        .data_top {
+            display: flex;
+            justify-content: space-between;
+            margin-right: 1rem;
+            margin-bottom: 1rem;
+        }
     }
-  }
 }
 </style>

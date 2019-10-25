@@ -1,8 +1,8 @@
 <template>
-  <div class="components-form-demo-advanced-search page">
+  <div class="components-form-demo-advanced-search">
     <!-- 表单 -->
     <a-form class="ant-advanced-search-form" :form="form" @submit="handleSearch">
-      <a-row :gutter="24">
+      <a-row :gutter="24" v-bind:class="{'search-input':!expanded}">
         <a-col :span="8" style="display:block">
           <a-form-item v-bind="formItemLayout" label="留货日期">
             <a-range-picker v-decorator="['range-picker']" />
@@ -26,8 +26,8 @@
         <a-col :span="8" style="display:block ">
           <a-form-item v-bind="formItemLayout" label="订货/礼品" has-feedback>
             <a-select v-decorator="['type']">
-              <a-select-option value="china">China</a-select-option>
-              <a-select-option value="usa">U.S.A</a-select-option>
+              <a-select-option value="订货/超期">订货/超期</a-select-option>
+              <a-select-option value="订货/超期/锁死">订货/超期/锁死</a-select-option>
             </a-select>
           </a-form-item>
         </a-col>
@@ -39,8 +39,15 @@
         <a-col :span="8" style="display:block ">
           <a-form-item v-bind="formItemLayout" label="产品线" has-feedback>
             <a-select v-decorator="['produceLine']">
-              <a-select-option value="china">China</a-select-option>
-              <a-select-option value="usa">U.S.A</a-select-option>
+              <a-select-option value="安全">安全</a-select-option>
+              <a-select-option value="存储">存储</a-select-option>
+              <a-select-option value="接入">接入</a-select-option>
+              <a-select-option value="企业通信">企业通信</a-select-option>
+              <a-select-option value="数据中心能源">数据中心能源</a-select-option>
+              <a-select-option value="视频监控">视频监控</a-select-option>
+              <a-select-option value="数通">数通</a-select-option>
+              <a-select-option value="云软件">云软件</a-select-option>
+              <a-select-option value="智能计算">智能计算</a-select-option>
             </a-select>
           </a-form-item>
         </a-col>
@@ -83,7 +90,7 @@
           </a-form-item>
         </a-col>
         <a-col v-show="flag" :span="8" style="display:block ">
-          <a-form-item v-bind="formItemLayout" label="是否锁定">
+          <a-form-item v-bind="formItemLayout"  label="是否锁定">
             <a-select v-decorator="['isLock']">
               <a-select-option value="0">是</a-select-option>
               <a-select-option value="1">否</a-select-option>
@@ -121,6 +128,7 @@
         </a-col>
       </a-row>
       <a-row>
+        <a-divider> <a-icon v-on:click="expand" v-if="!expanded" type="down" />  <a-icon  v-on:click="expand" v-if="expanded" type="up" /> </a-divider>
         <a-col :span="24" :style="{ textAlign: 'center' }">
           <a-button type="primary" html-type="submit">查询</a-button>
           <a-button :style="{ marginLeft: '8px' }" @click="handleReset">重置</a-button>
@@ -132,8 +140,7 @@
       :dataSource="data"
       :rowSelection="rowSelection"
       bordered
-      :scroll="{ x: 2200 }"
-      class="myfont"
+      :scroll="{ x: 3200 }"
     >
       <!-- <template slot="name" slot-scope="text">
           <a href="javascript:;">{{text}}</a>
@@ -154,7 +161,7 @@
       :dataSource="selectedData"
       :rowSelection="rowSelection"
       bordered
-      :scroll="{ x: 2200 }"
+      :scroll="{ x: 3200 }"
     ></a-table>
   </div>
 </template>
@@ -169,7 +176,7 @@ export default {
   name: "queryData",
   data() {
     return {
-      expand: false,
+      expanded: false,
       form: this.$form.createForm(this),
       formItemLayout,
       roles: "管理员",
@@ -184,10 +191,13 @@ export default {
     this.columns = this.flag ? glData.columns : xsData.columns;
   },
   methods: {
+    expand(){
+        this.expanded = !this.expanded;
+      },
     ...mapMutations("goods", ["SET_GOODSDATAS"]),
     goodsApply() {
       console.log(this.selectedData);
-      this.$http.post("/retail/data/tmp/left", this.selectedData).then(data => {
+      this.$http.post("/data/tmp/left", this.selectedData).then(data => {
         // console.log(data);
         if (data.status != 200) {
           if (data.status == 2506) {
@@ -226,9 +236,9 @@ export default {
         }
         // console.log({ ...fieldsValue });
         this.$http
-          .get("retail/data/list", { params: { ...fieldsValue } })
+          .get("data/list", { params: { ...fieldsValue } })
           .then(data => {
-            let items = data.items;
+            let items = data.list;
             items.forEach((item, index) => {
               item.key = index;
             });
@@ -243,9 +253,7 @@ export default {
   },
   computed: {
     // ...mapState("user", ["name", "roles"]),
-    count() {
-      return this.expand ? 11 : 7;
-    },
+
     rowSelection() {
       // const  selectedRowKeys  = this;
       const that = this;
@@ -276,15 +284,19 @@ export default {
 // @font-size-base{
 //   font-size:.8rem
 // }
-
+.ant-divider{
+  color:#ccc!important;
+  margin:0!important;
+}
 .ant-advanced-search-form {
   // font-size:.8rem;
-  padding: 24px;
+  padding: 12px;
   background: #fbfbfb;
   border: 1px solid #d9d9d9;
   border-radius: 6px;
   .ant-form-item {
     display: flex;
+    margin-bottom: 5px;
   }
   .ant-form-item-control-wrapper {
     flex: 1;
@@ -292,7 +304,7 @@ export default {
 }
 
 .components-form-demo-advanced-search {
-  font-size: 0.8rem;
+  font-size: 14px;
   .ant-form {
     max-width: none;
   }
@@ -311,6 +323,7 @@ export default {
   }
 }
 
+
 .select_self_btn {
   float: left;
 }
@@ -318,4 +331,9 @@ export default {
 .myfont {
   font-size: 5px;
 }
+.search-input{
+  height: 45px;
+  overflow: hidden;
+}
+
 </style>

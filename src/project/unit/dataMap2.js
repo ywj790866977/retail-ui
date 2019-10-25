@@ -61,7 +61,7 @@ const glData = {
         {
             title: "货物名称",
             dataIndex: "goodsName",
-            width: 140
+            width: 200
         },
         {
             title: "数量",
@@ -96,7 +96,7 @@ const glData = {
         {
             title: "备注2",
             dataIndex: "memo2",
-            width: 100
+            width: 500
         },
         {
             title: "备注3",
