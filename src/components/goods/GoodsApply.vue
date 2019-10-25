@@ -21,6 +21,7 @@
           {{new Date() | dateFormat("yyyy-MM-dd")}}
         </a-col>
       </a-row>
+
       <a-row>
         <a-col :span="12" class="apply_msg">
           <span>备注:</span>
@@ -28,17 +29,36 @@
         </a-col>
       </a-row>
       <a-row>
-        <a-col :span="8" class="update_agent" >
+        <a-col :span="8" class="update_agent">
+          <h3 class="apply_title by_content">本页面只允许修改数量</h3>
+        </a-col>
+      </a-row>
+      <a-row>
+        <a-col :span="8" class="update_agent">
           <div v-if="roles == '销售员'">
             <a-button @click="batchEdit" class="update_btn">批量修改代理商</a-button>
-            <a-auto-complete
+            <!-- <a-auto-complete
               :dataSource="searchAgents"
               style="width: 200px"
               @select="onSelect"
               @search="handleSearch"
               placeholder="请输入代理商关键字"
               allowClear
-            />
+            /> -->
+            <a-select
+              allowClear
+              showSearch
+              placeholder="Select a person"
+              optionFilterProp="children"
+              style="width: 200px"
+              @focus="handleFocus"
+              @blur="handleBlur"
+              @change="handleChange"
+              :filterOption="filterOption"
+
+            >
+              <a-select-option :value="item.id" v-for="(item) in agentList" :key="item.id">{{item.name}}</a-select-option>
+            </a-select>
           </div>
         </a-col>
       </a-row>
@@ -58,22 +78,29 @@
             最大值{{maxNum(record)}}-->
             <span>{{text}}</span>
           </template>
-          <template slot="newAgentName" slot-scope="text">
-            <!-- <a-auto-complete
-            :dataSource="searchAgents"
-            style="width: 150px"
-            @select="onSelect"
-            @search="handleSearch"
-            placeholder="请输入代理商关键字"
-            allowClear
-            /> -->
+          <template slot="agentName" slot-scope="text">
+            <!-- <a-select
+              
+              showSearch
+              placeholder="Select a person"
+              optionFilterProp="children"
+              style="width: 200px"
+              @focus="handleFocus"
+              @blur="handleBlur"
+              @change="handleChange"
+              :filterOption="filterOption"
+              :defaultValue="text"
+            >
+              <a-select-option :value="item.aid" v-for="(item) in agentList" :key="item.id">{{item.name}}</a-select-option>
+              
+            </a-select> -->
             <div>{{text}}</div>
           </template>
         </a-table>
       </div>
       <div class="sub_btn">
         <a-button @click="submit" type="primary" class="submit">提交</a-button>
-        <a-button  v-if="roles == '管理员'" @click="turnDown" class="submit">驳回</a-button>
+        <a-button v-if="roles == '管理员'" @click="turnDown" class="submit">驳回</a-button>
         <a-button @click="cancel" class="cancel">取消</a-button>
       </div>
     </div>
@@ -83,10 +110,10 @@
 <script>
 import { mapState } from "vuex";
 // const { mapState } = createNamespacedHelpers('goods')
-import { salesRow,adminRow } from "@/project/unit/goodsMap";
+import { salesRow, adminRow } from "@/project/unit/goodsMap";
 import { countDown } from "@/project/utils/time";
 // import EditableCell from "./compoment/EditableCell";
-import { encodeUnicode } from "@/project/utils/tools";
+
 export default {
   name: "goodsApply",
   data() {
@@ -96,7 +123,7 @@ export default {
       data: [],
       oldData: [],
       agentList: [], // 请求回来的代理商列表
-      searchAgents: [], // 查询出来的列表
+      // searchAgents: [], // 查询出来的列表
       selectedAgent: [], //选中的代理商
       selectedData: [],
       goodsMax: "",
@@ -131,10 +158,31 @@ export default {
       }
     });
 
-    this.columns = this.roles === '管理员'? adminRow : salesRow
+    this.columns = this.roles === "管理员" ? adminRow : salesRow;
   },
   methods: {
-    turnDown(){},
+    handleChange(value) {
+      console.log(`selected ${value}`);
+      if(value){
+        let list = [...this.agentList];
+        this.selectedAgent = list.find(item => item.id === value);
+      }
+    },
+    handleBlur() {
+      console.log("blur");
+    },
+    handleFocus() {
+      console.log("focus");
+    },
+    filterOption(input, option) {
+      
+      return (
+        option.componentOptions.children[0].text
+          .toLowerCase()
+          .indexOf(input.toLowerCase()) >= 0
+      );
+    },
+    turnDown() {},
     //取消
     cancel() {
       let data = [...this.selectedData];
@@ -231,19 +279,7 @@ export default {
         return false;
       }
     },
-    maxNum(record) {
-      // console.log(record)
-      let _oldData = [...this.oldData];
-      let target = _oldData.find(item => item.id == record.id);
-      return parseInt(target.goodsNum);
-    },
-    changeNum(value) {
-      // console.log(value)
-      value;
-    },
-    handleChange(value) {
-      console.log(`selected ${value}`);
-    },
+
     // 批量修改
     batchEdit() {
       if (this.selectedData && this.selectedData.length > 0) {
@@ -260,33 +296,7 @@ export default {
         });
       }
     },
-    // 搜索代理商
-    handleSearch(value) {
-      let patt = RegExp(encodeUnicode(value));
-      let list = [];
-      this.agentList.forEach(item => {
-        if (patt.test(item.name)) {
-          list.push(item.name);
-        }
-      });
-      this.searchAgents = list;
-    },
-    //选择的代理商
-    onSelect(value) {
-      // console.log("onSelect", value);
-      let list = [...this.agentList];
-      this.selectedAgent = list.find(item => item.name === value);
-      this.searchAgents = [];
-    },
-    // 修改数量
-    updateNum(record, dataIndex, value) {
-      console.log(record, dataIndex, value);
-    },
     handleTableChange() {},
-    // handleChange() {},
-    goodsApply() {
-      // console.log(this.selectedData)
-    },
     // ok 倒计时
     countClearData() {
       let endtime = new Date(this.nowTime);
@@ -304,7 +314,7 @@ export default {
   computed: {
     ...mapState("goods", ["goodsData", "test"]),
     ...mapState("user", ["name", "roles"]),
-  
+
     rowSelection() {
       // const  selectedRowKeys  = this
       const that = this;
