@@ -37,22 +37,12 @@
         <a-col :span="8" class="update_agent">
           <div v-if="roles == '销售员'">
             <a-button @click="batchEdit" class="update_btn">批量修改代理商</a-button>
-            <!-- <a-auto-complete
-              :dataSource="searchAgents"
-              style="width: 200px"
-              @select="onSelect"
-              @search="handleSearch"
-              placeholder="请输入代理商关键字"
-              allowClear
-            /> -->
             <a-select
               allowClear
               showSearch
-              placeholder="Select a person"
+              placeholder="输入关键字查询"
               optionFilterProp="children"
-              style="width: 200px"
-              @focus="handleFocus"
-              @blur="handleBlur"
+              style="width: 300px"
               @change="handleChange"
               :filterOption="filterOption"
 
@@ -70,6 +60,7 @@
           :dataSource="data"
           :rowSelection="rowSelection"
           bordered
+          
           :scroll="{ x: 3200 }"
           @change="handleTableChange"
         >
@@ -78,21 +69,20 @@
             最大值{{maxNum(record)}}-->
             <span>{{text}}</span>
           </template>
-          <template slot="agentName" slot-scope="text">
+          <template slot="newAgentName" slot-scope="text">
             <!-- <a-select
-              
+              allowClear
               showSearch
-              placeholder="Select a person"
+              placeholder="输入关键字查询"
               optionFilterProp="children"
               style="width: 200px"
-              @focus="handleFocus"
+              @focus="handleFocus(record)"
               @blur="handleBlur"
-              @change="handleChange"
+              @change="handleChange2"
               :filterOption="filterOption"
-              :defaultValue="text"
-            >
-              <a-select-option :value="item.aid" v-for="(item) in agentList" :key="item.id">{{item.name}}</a-select-option>
               
+            >
+              <a-select-option :value="item.id" v-for="(item,i) in agentList" :key="i">{{item.name}}</a-select-option>
             </a-select> -->
             <div>{{text}}</div>
           </template>
@@ -112,7 +102,7 @@ import { mapState } from "vuex";
 // const { mapState } = createNamespacedHelpers('goods')
 import { salesRow, adminRow } from "@/project/unit/goodsMap";
 import { countDown } from "@/project/utils/time";
-// import EditableCell from "./compoment/EditableCell";
+
 
 export default {
   name: "goodsApply",
@@ -126,6 +116,7 @@ export default {
       // searchAgents: [], // 查询出来的列表
       selectedAgent: [], //选中的代理商
       selectedData: [],
+      updateId:'',
       goodsMax: "",
       clearTime: { h: 0, m: 0, s: 0 },
       intervalNam: 0,
@@ -150,32 +141,43 @@ export default {
         this.$message.error("获取数据失败!");
       }
     });
-    //获取代理商
-    this.$http.get("/goods/app/tmp/left/list").then(res => {
-      console.log(res);
-      if (res.status == 200) {
-        this.agentList = res.list;
-      }
-    });
-
+    
+    this.getAgentName()
     this.columns = this.roles === "管理员" ? adminRow : salesRow;
   },
   methods: {
-    handleChange(value) {
+    handleChange2(value) {
       console.log(`selected ${value}`);
+      // let _data = [...]
+      // let agentObj = this.agentList.find(item=>item.id = value)
+      // console.log(agentObj)
+      // this.data.forEach(item=>{
+      //   if(item.id == this.updateId){
+      //     item.newAgentName = 
+      //   }
+      // })
+      
+    },
+    handleChange(value) {
+      // console.log(`selected ${value}`);
       if(value){
         let list = [...this.agentList];
         this.selectedAgent = list.find(item => item.id === value);
       }
     },
+    //获取需要修改的id
     handleBlur() {
-      console.log("blur");
+      
     },
-    handleFocus() {
-      console.log("focus");
+    handleFocus(record) {
+      console.log("blur:"+record.id);
+      this.updateId = record.id
+      // console.log(this.agentList)
+      // if(!this.agentList){
+      //   this.getAgentName()
+      // }
     },
     filterOption(input, option) {
-      
       return (
         option.componentOptions.children[0].text
           .toLowerCase()
@@ -297,6 +299,16 @@ export default {
       }
     },
     handleTableChange() {},
+    //获取代理商
+    getAgentName(){
+      //获取代理商
+      this.$http.get("/goods/app/tmp/left/list").then(res => {
+        // console.log(res);
+        if (res.status == 200) {
+          this.agentList = res.list;
+        }
+      });
+    },
     // ok 倒计时
     countClearData() {
       let endtime = new Date(this.nowTime);
