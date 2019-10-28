@@ -171,6 +171,7 @@ import { mapMutations } from "vuex";
 // import { mapState } from "vuex";
 import { xsData, formItemLayout } from "@/project/unit/dataMap";
 import { glData } from "@/project/unit/dataMap2";
+
 export default {
   name: "queryData",
   data() {
@@ -252,6 +253,7 @@ export default {
   },
   computed: {
     // ...mapState("user", ["name", "roles"]),
+
     rowSelection() {
       // const  selectedRowKeys  = this;
       const that = this;
@@ -289,7 +291,7 @@ export default {
 .ant-advanced-search-form {
   // font-size:.8rem;
   padding: 12px;
-  background: #fbfbfb;
+  background: #fff;
   border: 1px solid #d9d9d9;
   border-radius: 6px;
   .ant-form-item {
@@ -300,6 +302,7 @@ export default {
     flex: 1;
   }
 }
+
 .components-form-demo-advanced-search {
   font-size: 14px;
   .ant-form {
@@ -309,7 +312,7 @@ export default {
     margin-top: 16px;
     border-radius: 6px;
     .operating_btns {
-      background: #fbfbfb;
+      background: #fff;
       text-align: center;
       padding: 0.6rem;
       border-radius: 5px;
@@ -319,9 +322,12 @@ export default {
     }
   }
 }
+
+
 .select_self_btn {
   float: left;
 }
+
 .myfont {
   font-size: 5px;
 }
@@ -329,4 +335,5 @@ export default {
   height: 45px;
   overflow: hidden;
 }
+
 </style>

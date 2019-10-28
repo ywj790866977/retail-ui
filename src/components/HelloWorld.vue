@@ -2,8 +2,6 @@
   <div class="hello">
     <h1>{{ name }}</h1>
     <!-- <input type="text" v-model="keyWord" @input="SET_NAME(keyWord)" /> -->
-    <router-link to="/query">query</router-link>
-    <router-link to="/goods">goods</router-link>
   </div>
 </template>
 
@@ -28,14 +26,13 @@ export default {
       this.SET_NAME(res.name);
       this.SET_ROLES(res.role);
     })
-    
+    console.log(this.name)
   },
   methods: {
-    ...mapMutations("user", ["SET_NAME", "SET_ROLES"]),
-    // ...mapActions('user',['setInfo'])
+    ...mapMutations("user", ["SET_NAME", "SET_ROLES"])
   },
   computed: {
-    ...mapState('user', ["name", "roles"])
+    ...mapState("user", ["name", "roles"])
   }
 };
 </script>

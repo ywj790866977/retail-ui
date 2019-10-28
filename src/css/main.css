@@ -5,6 +5,12 @@
 .ant-table-thead > tr > th > div{
     white-space: nowrap;
 }
+.ant-table-tbody > tr > td{
+    background-color: #fafafa;
+}
+.ant-table-tbody > tr.ant-table-row-selected td {
+    background: rgb(255, 255, 255);
+}
 
 .page-root, body {
   min-width: 700px
@@ -405,7 +411,15 @@ pre {
 }
 
 .right-top+.right-content {
-  padding-top: 70px
+  padding-top: 50px
+}
+.right-content .search-header{
+  padding:20px 45px;
+  background: #fff;
+}
+.right-content .row-clear{
+  height:25px;
+  background: #f3f3f4;
 }
 
 .right-top .btn {

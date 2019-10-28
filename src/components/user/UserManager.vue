@@ -1,26 +1,29 @@
 <template>
-<div class="user_manager">
+  <div>
   <!-- 头 -->
-  <div class="manager_header">
-    <h3 class="manager_title">账户管理</h3>
-    <div class="serarch">
-      <span>itcode:</span>
-      <a-input-search placeholder="请输入itcode" @search="onSearch" />
+    <div class="search-header">
+      <a-form layout="inline" class="search">
+        <a-form-item label="itcode:" has-feedback>
+          <a-input-search placeholder="请输入itcode" @search="onSearch" />
+        </a-form-item>
+      </a-form>
     </div>
-  </div>
-  <!-- 展示数据 -->
-  <div class="data_table">
-    <div class="data_top">
-      <h4>用户列表：</h4>
-      <div>
-        <a-button type="primary" icon="plus" @click="showUserModal">新增用户</a-button>
+    <div class="row-clear">
+    </div>
+
+    <div class="user_manager">
+    <!-- 展示数据 -->
+    <div class="data-table">
+      <div class="data-top">
+        <h4 class="pull-left">用户列表：</h4>
+        <a-button class="pull-right" type="primary" icon="plus" @click="showUserModal">新增用户</a-button>
         <a-modal title="新增用户" :visible="visible" @ok="handleOk" :confirmLoading="confirmLoading" @cancel="handleCancel">
           <div>
             <a-form :form="form" @submit="handleOk">
-              <a-form-item v-bind="formItemLayout" label="itCode" has-feedback>
+              <a-form-item v-bind="dialogFormItemLayout" label="itCode" has-feedback>
                 <a-input v-decorator="['username',{rules:[{required: true, message: '请输入itCode!',}]}]" />
               </a-form-item>
-              <a-form-item v-bind="formItemLayout" label="姓名" has-feedback>
+              <a-form-item  v-bind="dialogFormItemLayout" label="姓名" has-feedback>
                 <!-- <span slot="label" >
                     姓名&nbsp;
                     <a-tooltip title="真实姓名?">
@@ -29,17 +32,17 @@
                   </span>-->
                 <a-input v-decorator="['name',{rules: [{ required: true, message: '请输入真实姓名!', whitespace: true }]}]" />
               </a-form-item>
-              <a-form-item v-bind="formItemLayout" label="密码" has-feedback>
+              <a-form-item v-bind="dialogFormItemLayout" label="密码" has-feedback>
                 <a-input v-decorator="['pwd',{rules: [{required: true, message: '请输入密码 !',}, {validator: validateToNextPassword,}]}]" type="password" />
               </a-form-item>
 
-              <a-form-item v-bind="formItemLayout" label="启用" has-feedback>
+              <a-form-item v-bind="dialogFormItemLayout" label="启用" has-feedback>
                 <a-select v-decorator="['status', {rules: [{ required: true, message: '请选择用户状态！' }]}]" placeholder="请选择用户状态">
                   <a-select-option value="1">是</a-select-option>
                   <a-select-option value="0">否</a-select-option>
                 </a-select>
               </a-form-item>
-              <a-form-item v-bind="formItemLayout" label="角色" has-feedback>
+              <a-form-item v-bind="dialogFormItemLayout" label="角色" has-feedback>
                 <a-select v-decorator="['role',{rules: [{ required: true, message: '请选择用户角色!' }]}]" placeholder="请选择角色">
                   <a-select-option value="管理员">管理员</a-select-option>
                   <a-select-option value="销售员">销售员</a-select-option>
@@ -51,45 +54,49 @@
             </a-form>
           </div>
         </a-modal>
-      </div>
-    </div>
 
-    <a-table :columns="columns" :dataSource="data" bordered :pagination="pagination" :loading="loading" @change="handleTableChange" :rowKey="data.id">
-      <template slot="name" slot-scope="text">
-        <a href="javascript:;">{{text}}</a>
-      </template>
-      <template slot="pwd" slot-scope="text, record">
-        <editable-cell :text="text" @change="updatePwd(record.username, 'pwd', $event)" />
-      </template>
-      <template slot="status" slot-scope="text,record">
-        <a-select :defaultValue="text == 1? '启用': '未启用'" style="width: 120px" @change="updateInfo(record,'status',$event)">
-          <a-select-option value="1">启用</a-select-option>
-          <a-select-option value="0">未启用</a-select-option>
-        </a-select>
-      </template>
-      <template slot="role" slot-scope="text,record">
-        <a-select :defaultValue="text =='管理员'? '管理员': '销售员'" style="width: 120px" @change="updateInfo(record,'role',$event)">
-          <a-select-option value="管理员">管理员</a-select-option>
-          <a-select-option value="销售员">销售员</a-select-option>
-        </a-select>
-      </template>
-      <template slot="updateTime" slot-scope="text">{{text | dateFormat}}</template>
-    </a-table>
+        <div class="clearfix"></div>
+      </div>
+
+      <a-table :columns="columns" :dataSource="data" bordered :pagination="pagination" :loading="loading" @change="handleTableChange" :rowKey="data.id">
+        <template slot="name" slot-scope="text">
+          <a href="javascript:;">{{text}}</a>
+        </template>
+        <template slot="pwd" slot-scope="text, record">
+          <edit-password :text="text" @change="updatePwd(record.username, 'pwd', $event)" />
+        </template>
+        <template slot="status" slot-scope="text,record">
+          <a-select :defaultValue="text == 1? '启用': '未启用'" style="width: 120px" @change="updateInfo(record,'status',$event)">
+            <a-select-option value="1">启用</a-select-option>
+            <a-select-option value="0">未启用</a-select-option>
+          </a-select>
+        </template>
+        <template slot="role" slot-scope="text,record">
+          <a-select :defaultValue="text =='管理员'? '管理员': '销售员'" style="width: 120px" @change="updateInfo(record,'role',$event)">
+            <a-select-option value="管理员">管理员</a-select-option>
+            <a-select-option value="销售员">销售员</a-select-option>
+          </a-select>
+        </template>
+        <template slot="updateTime" slot-scope="text">{{text | dateFormat}}</template>
+      </a-table>
+    </div>
   </div>
 </div>
 </template>
 
 <script>
-import EditableCell from "./component/EditableCell";
+import EditPassword from "./component/EditPassword";
 import {
   userMap,
-  residences,
-  formItemLayout,
+  dialogFormItemLayout,
   tailFormItemLayout
 } from "@/project/unit/dataMap.js";
 
 export default {
   name: "userManager",
+  mounted(){
+    this.$store.dispatch("setMainheader",{});
+  },
   data() {
     return {
       columns: [], // 列名
@@ -110,9 +117,8 @@ export default {
         showSizeChange: (current, pageSize) => (this.pageSize = pageSize)
       },
       confirmDirty: false,
-      residences,
       autoCompleteResult: [],
-      formItemLayout,
+      dialogFormItemLayout,
       tailFormItemLayout
     };
   },
@@ -138,7 +144,7 @@ export default {
     validateToNextPassword(rule, value, callback) {
       let tag = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{1,8}$/.test(value);
       if (value && !tag) {
-        callback("密码格式不正确!");
+        callback("格式错误，请输入不超过8位字符数字的组合!");
       }
       callback();
     },
@@ -152,8 +158,7 @@ export default {
       this.form.validateFieldsAndScroll((err, values) => {
         if (!err) {
           // console.log("表单内容: ", values);
-          this.$http
-            .post("user", { ...values })
+          this.$http.post("user", { ...values})
             .then(() => {
               this.visible = false;
               this.confirmLoading = false;
@@ -185,10 +190,9 @@ export default {
         this.$http
           .get(`user/${value}`)
           .then(data => {
-            let _data = [];
-            data.key = 1;
-            _data.push(data);
-            this.data = _data;
+            let list = [];
+            list.push(data.item);
+            this.data = list;
             this.pagination.total = 1;
             this.loading = false;
           })
@@ -211,7 +215,8 @@ export default {
         };
 
         this.$http
-          .put(`user/${key}`, { ...params })
+          .put(`user/${key}`, { ...params
+          })
           .then(() => {
             this.success("修改密码成功！");
             const dataSource = [...this.data];
@@ -239,7 +244,8 @@ export default {
         };
         this.loading = true;
         this.$http
-          .put(`user/${key.username}`, { ...params })
+          .put(`user/${key.username}`, { ...params
+          })
           .then(() => {
             key[dataIndex] = value
             this.success(`修改成功!`);
@@ -309,40 +315,19 @@ export default {
     }
   },
   components: {
-    EditableCell
+    EditPassword
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.user_manager {
+.user_manager{
     // font-size: .8rem;
-    background: #fbfbfb;
-    padding: 1rem;
-    border-radius: 5px;
-    .manager_header {
-        //  border-radius: 5px;
-        // padding:1rem;
-        // border-radius: 10px;
-        .manager_title {
-            text-align: center;
-        }
-        .serarch {
-            display: flex;
-            width: 30%;
-        }
-    }
-
-    .data_table {
-        //  border-radius: 5px;
-        //     background: #fbfbfb;
-        margin-top: 2rem;
-        .data_top {
-            display: flex;
-            justify-content: space-between;
-            margin-right: 1rem;
-            margin-bottom: 1rem;
-        }
+    background: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 0 0 5px 5px;
+    .data-top{
+      margin:0.5rem 0;
     }
 }
 </style>

@@ -29,27 +29,16 @@
         </a-col>
       </a-row>
       <a-row>
-        <a-col :span="8" class="update_agent">
+        <a-col :span="6" class="update_agent">
           <h3 class="apply_title by_content">本页面只允许修改数量</h3>
         </a-col>
       </a-row>
-      <a-row>
-        <a-col :span="8" class="update_agent">
-          <div v-if="roles == '销售员'">
+      <a-row v-if="roles == '销售员'">
+        <a-col :span="6" class="update_agent">
             <a-button @click="batchEdit" class="update_btn">批量修改代理商</a-button>
-            <a-select
-              allowClear
-              showSearch
-              placeholder="输入关键字查询"
-              optionFilterProp="children"
-              style="width: 300px"
-              @change="handleChange"
-              :filterOption="filterOption"
-
-            >
-              <a-select-option :value="item.id" v-for="(item) in agentList" :key="item.id">{{item.name}}</a-select-option>
-            </a-select>
-          </div>
+        </a-col>
+        <a-col :span="6" >
+            <agent-search :agentName="selectedAgent?selectedAgent.name:''" v-on:change="setSelectedAgent"></agent-search>
         </a-col>
       </a-row>
     </header>
@@ -60,31 +49,16 @@
           :dataSource="data"
           :rowSelection="rowSelection"
           bordered
-          
+
           :scroll="{ x: 3200 }"
           @change="handleTableChange"
         >
-          <template slot="goodsNum" slot-scope="text">
-            <!-- <a-input-number  :max="maxNum(record)" v-model="record.goodsNum" @change="changeNum" />
-            最大值{{maxNum(record)}}-->
-            <span>{{text}}</span>
+          <template slot="newGoodsNum" slot-scope="text,record">
+            <a-input-number :min="0" :max="parseInt(record['goodsNum'])"  v-model="record['newGoodsNum']" />
           </template>
-          <template slot="newAgentName" slot-scope="text">
-            <!-- <a-select
-              allowClear
-              showSearch
-              placeholder="输入关键字查询"
-              optionFilterProp="children"
-              style="width: 200px"
-              @focus="handleFocus(record)"
-              @blur="handleBlur"
-              @change="handleChange2"
-              :filterOption="filterOption"
-              
-            >
-              <a-select-option :value="item.id" v-for="(item,i) in agentList" :key="i">{{item.name}}</a-select-option>
-            </a-select> -->
-            <div>{{text}}</div>
+          <template slot="newAgentName" slot-scope="text,record">
+            {{record['newAgentName']}}
+            <agent-search :agentName="record['newAgentName']" v-on:change="setRecordAgent($event,record)"></agent-search>
           </template>
         </a-table>
       </div>
@@ -102,19 +76,20 @@ import { mapState } from "vuex";
 // const { mapState } = createNamespacedHelpers('goods')
 import { salesRow, adminRow } from "@/project/unit/goodsMap";
 import { countDown } from "@/project/utils/time";
+import agentSearch  from "@/components/widget/agentSearch";
 
 
 export default {
   name: "goodsApply",
+  components: { agentSearch },
   data() {
     return {
       memo: "",
       columns: [],
       data: [],
       oldData: [],
-      agentList: [], // 请求回来的代理商列表
       // searchAgents: [], // 查询出来的列表
-      selectedAgent: [], //选中的代理商
+      selectedAgent: null, //选中的代理商
       selectedData: [],
       updateId:'',
       goodsMax: "",
@@ -141,50 +116,25 @@ export default {
         this.$message.error("获取数据失败!");
       }
     });
-    
-    this.getAgentName()
+
     this.columns = this.roles === "管理员" ? adminRow : salesRow;
   },
   methods: {
-    handleChange2(value) {
-      console.log(`selected ${value}`);
-      // let _data = [...]
-      // let agentObj = this.agentList.find(item=>item.id = value)
-      // console.log(agentObj)
-      // this.data.forEach(item=>{
-      //   if(item.id == this.updateId){
-      //     item.newAgentName = 
-      //   }
-      // })
-      
+    setSelectedAgent(value){
+      this.selectedAgent = value;
     },
-    handleChange(value) {
-      // console.log(`selected ${value}`);
+    setRecordAgent(value,record){
       if(value){
-        let list = [...this.agentList];
-        this.selectedAgent = list.find(item => item.id === value);
+        record['newAgentName'] = value.name;
+        record['agentId'] = value.aid;
+      }else{
+        record['newAgentName'] = "";
+        record['agentId'] = "";
       }
     },
-    //获取需要修改的id
-    handleBlur() {
-      
+    turnDown(){
+
     },
-    handleFocus(record) {
-      console.log("blur:"+record.id);
-      this.updateId = record.id
-      // console.log(this.agentList)
-      // if(!this.agentList){
-      //   this.getAgentName()
-      // }
-    },
-    filterOption(input, option) {
-      return (
-        option.componentOptions.children[0].text
-          .toLowerCase()
-          .indexOf(input.toLowerCase()) >= 0
-      );
-    },
-    turnDown() {},
     //取消
     cancel() {
       let data = [...this.selectedData];
@@ -284,31 +234,16 @@ export default {
 
     // 批量修改
     batchEdit() {
-      if (this.selectedData && this.selectedData.length > 0) {
+
+      if (this.selectedAgent && this.selectedData && this.selectedData.length > 0) {
         //修改
         this.selectedData.forEach(item => {
           item.newAgentName = this.selectedAgent.name;
           item.agentId = this.selectedAgent.aid;
-          this.agentList.forEach(data => {
-            if (item.id == data.id) {
-              data.newAgentName = this.selectedAgent.name;
-              data.agentId = this.selectedAgent.aid;
-            }
-          });
         });
       }
     },
     handleTableChange() {},
-    //获取代理商
-    getAgentName(){
-      //获取代理商
-      this.$http.get("/goods/app/tmp/left/list").then(res => {
-        // console.log(res);
-        if (res.status == 200) {
-          this.agentList = res.list;
-        }
-      });
-    },
     // ok 倒计时
     countClearData() {
       let endtime = new Date(this.nowTime);
@@ -349,9 +284,6 @@ export default {
         })
       };
     }
-  },
-  components: {
-    // EditableCell
   }
 };
 </script>
@@ -384,7 +316,6 @@ export default {
     }
     .update_agent {
       display: flex;
-      margin-top: 2rem;
       .update_btn {
         margin-right: 1rem;
       }

@@ -16,8 +16,6 @@ const countDown =  (endTime)=> {
   let s = sec > 9 ? sec : '0' + sec;
   return {h,m,s}
 }
-
-
 export {
   countDown
 }

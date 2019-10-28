@@ -1,11 +1,12 @@
 <template>
   <div class="editable-cell">
     <div v-if="editable" class="editable-cell-input-wrapper">
-      <a-input :value="value" @change="handleChange" @pressEnter="check" />
-      <a-icon type="check" class="editable-cell-icon-check" @click="check" />
+      <a-input :value="value" @change="handleChange" @pressEnter="check">
+        <a-icon slot="addonAfter" type="check" @click="check" />
+      </a-input>
     </div>
     <div v-else class="editable-cell-text-wrapper">
-      {{ value || ' ' }}
+      {{ '***' }}
       <a-icon type="edit" class="editable-cell-icon" @click="edit" />
     </div>
   </div>
@@ -36,8 +37,8 @@ export default {
       }else{
         this.editable = false;
         this.$emit("change", { status: isok, value: this.value });
-      }      
-     
+      }
+
     },
     edit() {
       this.editable = true;
@@ -61,33 +62,16 @@ export default {
   padding: 5px 24px 5px 5px;
 }
 
-.editable-cell-icon,
-.editable-cell-icon-check {
+.editable-cell-icon {
   position: absolute;
   right: 0;
   width: 20px;
   cursor: pointer;
-}
-
-.editable-cell-icon {
   line-height: 18px;
-  display: none;
 }
 
-.editable-cell-icon-check {
-  line-height: 28px;
-}
-
-.editable-cell:hover .editable-cell-icon {
-  display: inline-block;
-}
-
-.editable-cell-icon:hover,
-.editable-cell-icon-check:hover {
+.editable-cell-icon:hover {
   color: #108ee9;
 }
 
-.editable-add-btn {
-  margin-bottom: 8px;
-}
 </style>
