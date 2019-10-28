@@ -5,6 +5,7 @@ import user from './modules/user'
 import goods from './modules/goods'
 import dump from './modules/dump'
 import release from './modules/release'
+import mainheader from './modules/mainheader'
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
@@ -12,7 +13,8 @@ const store = new Vuex.Store({
     user,
     goods,
     dump,
-    release
+    release,
+    mainheader
   },
   getters
 })
