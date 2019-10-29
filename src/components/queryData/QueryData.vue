@@ -71,7 +71,7 @@
             <a-input v-decorator="[`dumpId` ]" />
           </a-form-item>
         </a-col>
-        <a-col v-show="flag" :span="8" style="display:block ">
+        <a-col v-if="isAdmin" :span="8" style="display:block ">
           <a-form-item v-bind="formItemLayout" :label="`是否删除物料`">
             <a-select v-decorator="['isDeleteBomCode']">
               <a-select-option value="0">是</a-select-option>
@@ -80,7 +80,7 @@
             </a-select>
           </a-form-item>
         </a-col>
-        <a-col v-show="flag" :span="8" style="display:block ">
+        <a-col v-if="isAdmin" :span="8" style="display:block ">
           <a-form-item v-bind="formItemLayout" :label="`是否更改批次`">
             <a-select v-decorator="['isModifyBatch']">
               <a-select-option value="0">是</a-select-option>
@@ -89,8 +89,8 @@
             </a-select>
           </a-form-item>
         </a-col>
-        <a-col v-show="flag" :span="8" style="display:block ">
-          <a-form-item v-bind="formItemLayout"  label="是否锁定">
+        <a-col v-if="isAdmin" :span="8" style="display:block ">
+          <a-form-item v-bind="formItemLayout" label="是否锁定">
             <a-select v-decorator="['isLock']">
               <a-select-option value="0">是</a-select-option>
               <a-select-option value="1">否</a-select-option>
@@ -98,7 +98,7 @@
             </a-select>
           </a-form-item>
         </a-col>
-        <a-col v-show="flag" :span="8" style="display:block ">
+        <a-col v-if="isAdmin" :span="8" style="display:block ">
           <a-form-item v-bind="formItemLayout" :label="`是否在EB中已更改`">
             <a-select v-decorator="['isModifyEB']">
               <a-select-option value="0">是</a-select-option>
@@ -112,12 +112,12 @@
             <a-input v-decorator="[`bomCode` ]" />
           </a-form-item>
         </a-col>
-        <a-col v-show="flag" :span="8" style="display:block ">
+        <a-col v-if="isAdmin" :span="8" style="display:block ">
           <a-form-item v-bind="formItemLayout" :label="`更改后批次`">
             <a-input v-decorator="[`nowBatch` ]" />
           </a-form-item>
         </a-col>
-        <a-col v-show="flag" :span="8" style="display:block ">
+        <a-col v-if="isAdmin" :span="8" style="display:block ">
           <a-form-item v-bind="formItemLayout" :label="`数量是否为负`">
             <a-select v-decorator="['isNegativeNum']">
               <a-select-option value="0">是</a-select-option>
@@ -128,7 +128,10 @@
         </a-col>
       </a-row>
       <a-row>
-        <a-divider> <a-icon v-on:click="expand" v-if="!expanded" type="down" />  <a-icon  v-on:click="expand" v-if="expanded" type="up" /> </a-divider>
+        <a-divider>
+          <a-icon v-on:click="expand" v-if="!expanded" type="down" />
+          <a-icon v-on:click="expand" v-if="expanded" type="up" />
+        </a-divider>
         <a-col :span="24" :style="{ textAlign: 'center' }">
           <a-button type="primary" html-type="submit">查询</a-button>
           <a-button :style="{ marginLeft: '8px' }" @click="handleReset">重置</a-button>
@@ -146,7 +149,7 @@
           <a href="javascript:;">{{text}}</a>
       </template>-->
     </a-table>
-    <div class="search-result-list">
+    <div v-if="!isAdmin" class="search-result-list">
       <div class="operating_btns">
         <a-button type="default" class="btn_item select_self_btn">已选中的数据</a-button>
         <a-button type="default" class="btn_item" @click="goodsApply">留货</a-button>
@@ -154,6 +157,15 @@
         <a-button type="default" class="btn_item" @click="releaseApply">释放</a-button>
         <a-button type="default" class="btn_item">锁定</a-button>
         <a-button type="default" class="btn_item">取消锁定</a-button>
+      </div>
+    </div>
+    <div v-else class="search-result-list">
+      <div class="operating_btns">
+        <a-button type="default" class="btn_item" @click="EBModify">EB批次更改</a-button>
+        <a-button type="default" class="btn_item">导出数据</a-button>
+        <a-button type="default" class="btn_item" @click="DeleteData">删除</a-button>
+        <a-button type="default" class="btn_item">导入增加数据</a-button>
+        <a-button type="default" class="btn_item">导入删除数据</a-button>
       </div>
     </div>
     <a-table
@@ -168,6 +180,7 @@
 
 <script>
 import { mapMutations } from "vuex";
+import { mapState } from "vuex";
 // import { mapState } from "vuex";
 import { xsData, formItemLayout } from "@/project/unit/dataMap";
 import { glData } from "@/project/unit/dataMap2";
@@ -179,21 +192,15 @@ export default {
       expanded: false,
       form: this.$form.createForm(this),
       formItemLayout,
-      roles: "管理员",
-      columns: [],
       data: [],
-      selectedData: [],
-      flag: false
+      selectedData: []
     };
   },
-  created() {
-    this.flag = this.roles === "管理员";
-    this.columns = this.flag ? glData.columns : xsData.columns;
-  },
+  created() {},
   methods: {
-    expand(){
-        this.expanded = !this.expanded;
-      },
+    expand() {
+      this.expanded = !this.expanded;
+    },
     ...mapMutations("goods", ["SET_GOODSDATAS"]),
     goodsApply() {
       console.log(this.selectedData);
@@ -223,8 +230,8 @@ export default {
       this.$router.push("/release");
     },
     //提交查询
-    handleSearch(e) {
-      e.preventDefault();
+    handleSearch() {
+      // e.preventDefault();
       this.form.validateFields((error, fieldsValue) => {
         // if (!error) {
         // console.log(fieldsValue);
@@ -249,6 +256,35 @@ export default {
     // 重置
     handleReset() {
       this.form.resetFields();
+    },
+    EBModify() {
+      this.$http.put("/data/EBbatch", this.selectedData).then(data => {
+        if (data.status != 200) {
+          this.$notification["error"]({
+            message: "EB批次更改失败,请稍后再试"
+          });
+        } else {
+          this.$notification["info"]({
+            message: "EB批次更改成功"
+          });
+          this.handleSearch();
+          this.selectedData = [];
+        }
+      });
+    },
+    DeleteData() {
+      this.$http.put("/data/ids", this.selectedData).then(data => {
+        if (data.status != 200) {
+          this.$notification["error"]({
+            message: "删除失败,请稍后再试"
+          });
+        } else {
+          this.$notification["info"]({
+            message: "删除成功"
+          });
+          this.selectedData = [];
+        }
+      });
     }
   },
   computed: {
@@ -273,6 +309,19 @@ export default {
           }
         })
       };
+    },
+
+    ...mapState({
+      role: state => {
+        return state.user.role;
+      }
+    }),
+    isAdmin() {
+      return this.role === "管理员";
+    },
+    columns: function() {
+      console.log(this.isAdmin + "," + this.role);
+      return this.isAdmin ? glData.columns : xsData.columns;
     }
   }
 };
@@ -284,9 +333,9 @@ export default {
 // @font-size-base{
 //   font-size:.8rem
 // }
-.ant-divider{
-  color:#ccc!important;
-  margin:0!important;
+.ant-divider {
+  color: #ccc !important;
+  margin: 0 !important;
 }
 .ant-advanced-search-form {
   // font-size:.8rem;
@@ -323,7 +372,6 @@ export default {
   }
 }
 
-
 .select_self_btn {
   float: left;
 }
@@ -331,9 +379,8 @@ export default {
 .myfont {
   font-size: 5px;
 }
-.search-input{
+.search-input {
   height: 45px;
   overflow: hidden;
 }
-
 </style>

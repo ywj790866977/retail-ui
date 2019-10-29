@@ -10,10 +10,10 @@ const routes = [
   { path: '/goods', component: ()=> import('@/components/goods/GoodsApply.vue')  },
   { path: '/dump', component: ()=> import('@/components/dump/DumpApply.vue')  },
   { path: '/release', component: ()=> import('@/components/release/ReleaseApply.vue')  },
+  { path: '/myApplication', component: ()=> import('@/components/myApplication/myApplication.vue')  },
 ]
 
 const router = new VueRouter({
-  mode: 'history',
   routes:routes
 })
 router.beforeEach((to, from, next) => {

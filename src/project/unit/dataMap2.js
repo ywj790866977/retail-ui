@@ -100,7 +100,7 @@ const glData = {
         },
         {
             title: "EB当前批次",
-            dataIndex: "EBnowBatch"
+            dataIndex: "ebnowBatch"
         }
     ],
 };
